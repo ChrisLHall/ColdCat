@@ -1,0 +1,25 @@
+Theme words: FROZEN, SECRET, KITTEN
+
+The game: Secret Frozen Kitten
+
+Idea: You are a young girl who has lost her cat somewhere in the caves of ice.
+It is an overhead view motherload-like grid of ice blocks, with a cave carved out of it.
+Some of the ice blocks are dark because they contain things.
+ your job is to dig through the ice blocks before you run out of food, in order
+to find your cat.
+
+Your cat is one of the dark blocks. It meows from time to time so you can get an idea
+of haow far away it is
+
+maybe in 3d with huge ice blocks. Sometimes they contain stairs.
+
+
+your character is a dog
+2d gameboy graphics - four colors (white, black, darkblue, lightbluegreen)
+you have a food meter that depletes when you walk and break ice
+many status effects change how much it costs to walk and break ice
+e.g. fire breath = barely any cost to break ic
+
+air pockets in the ice that burst all at once if an adjacent block is destroyed.
+cannot be seen form afar
+
