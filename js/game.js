@@ -6,6 +6,8 @@ var game = {
 	data : {
 		// score
 		score : 0
+        food : 100
+        timer : 60000
 	},
 	
 	
