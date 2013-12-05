@@ -2,6 +2,8 @@ Theme words: FROZEN, SECRET, KITTEN
 
 The game: Secret Frozen Kitten
 
+384*216 base screen resolution. Scaled up to double that onscreen.
+
 Idea: You are a young girl who has lost her cat somewhere in the caves of ice.
 It is an overhead view motherload-like grid of ice blocks, with a cave carved out of it.
 Some of the ice blocks are dark because they contain things.

@@ -3,7 +3,7 @@ game.TitleScreen = me.ScreenObject.extend({
 	 *  action to perform on state change
 	 */
 	onResetEvent: function() {	
-		; // TODO
+		me.game.add(new game.GameTile(10, 10, "empty", null, false), 1);
 	},
 	
 	
