@@ -4,10 +4,19 @@ var game = {
 
 	// an object where to store game information
 	data : {
+        // constants, DO NOT CHANGE THESE
+        BIGBONETIME: 480,
+        DIGCOST: 15,
 		// score
 		score : 0,
-        food : 100,
-        timer : 60000
+        timer : 6000,
+        timermax : 6000,
+        timeTaken : 0,
+        gotCat : false,
+        closeToCat : false,
+        playerLost : false,
+        powerupAnim : null,
+        powerupBlinking : false
 	},
 	
 	

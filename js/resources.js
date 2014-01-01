@@ -4,7 +4,16 @@ game.resources = [
 	 * @example
 	 * {name: "example", type:"image", src: "data/img/example.png"},
 	 */
-    {name: "tiles", type: "image", src: "data/img/sprites.png"}
+    {name: "tiles", type: "image", src: "data/img/sprites.png"},
+    {name: "overlay", type: "image", src: "data/img/HUD.png"},
+    {name: "timebone", type: "image", src: "data/img/bone.png"},
+    {name: "bigtimebone", type: "image", src: "data/img/bigbone.png"},
+    {name: "bigcat", type: "image", src: "data/img/bigcat.png"},
+    {name: "soundwave", type: "image", src: "data/img/soundwave.png"},
+    {name: "moneyfont", type: "image", src: "data/img/moneyfont.png"},
+    {name: "stopwatch", type: "image", src: "data/img/stopwatch.png"},
+    {name: "stopwatchfont", type: "image", src: "data/img/stopwatchfont.png"},
+    {name: "meowyell", type: "image", src: "data/img/meowyell.png"}
 
 	/* Atlases 
 	 * @example

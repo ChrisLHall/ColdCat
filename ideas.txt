@@ -25,3 +25,4 @@ e.g. fire breath = barely any cost to break ic
 air pockets in the ice that burst all at once if an adjacent block is destroyed.
 cannot be seen form afar
 
+dog's name: Sir Prancealot
