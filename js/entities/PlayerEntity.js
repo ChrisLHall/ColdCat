@@ -146,7 +146,7 @@ game.PlayerEntity = me.ObjectEntity.extend({
                 this.blockY = blockYEnd;
             } else if (this.digMode) {
                 this.moving = true;
-                this.motionTimer = Math.floor(15.0 / this.getDigSpeedMod());
+                this.motionTimer = Math.floor(30.0 / this.getDigSpeedMod());
                 this.motionFunc = this.stayStillFunc(this.blockX * 16,
                         this.blockY * 16);
                 this.diggingPos = new me.Vector2d(blockXEnd, blockYEnd);
