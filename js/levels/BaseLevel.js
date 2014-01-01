@@ -15,29 +15,35 @@ game.BaseLevel = me.Renderable.extend({
         this.floating = false;
         this.collidable = false;
 
-        this.playerStartX = Math.floor(this.blocksX / 2);
-        this.playerStartY = Math.floor(this.blocksY / 2);
+        this.startChunkX = 0;
+        this.startChunkY = 0;
+        this.catChunkX = 0;
+        this.catChunkY = 0;
 
-        var startChunkX = Math.floor(this.playerStartX / 16);
-        var startChunkY = Math.floor(this.playerStartY / 16);
-
-        this.catChunkX = startChunkX;
-        this.catChunkY = startChunkY;
-        while (Math.pow(this.catChunkX - startChunkX, 2)
-                + Math.pow(this.catChunkY - startChunkY, 2)
-                < Math.pow(Math.min(this.chunksX, this.chunksY) / 2, 2) - 2) {
+        // Make sure the distance between the starting chunks is 2/3 the max
+        // possible distance, give or take 1.
+        while (Math.abs(Math.abs(this.catChunkX - this.startChunkX)
+                + Math.abs(this.catChunkY - this.startChunkY)
+                - (this.chunksX + this.chunksY) * 0.6)
+                >= 1) {
             this.catChunkX = Math.floor(Math.random() * this.chunksX);
             this.catChunkY = Math.floor(Math.random() * this.chunksY);
+            this.startChunkX = Math.floor(Math.random() * this.chunksX);
+            this.startChunkY = Math.floor(Math.random() * this.chunksY);
         }
         this.catBlockX = 16*this.catChunkX + 1 + Math.floor(14 * Math.random());
         this.catBlockY = 16*this.catChunkY + 1 + Math.floor(14 * Math.random());
+        this.playerStartX = 16*this.startChunkX
+                + 1 + Math.floor(14 * Math.random());
+        this.playerStartY = 16*this.startChunkY
+                + 1 + Math.floor(14 * Math.random());
 
         this.chunks = [];
         for (var chunkY = 0; chunkY < this.chunksY; chunkY++) {
             this.chunks[chunkY] = [];
             for (var chunkX = 0; chunkX < this.chunksX; chunkX++) {
                 var t = "normal";
-                if (chunkX == startChunkX && chunkY == startChunkY) {
+                if (chunkX == this.startChunkX && chunkY == this.startChunkY) {
                     t = "player";
                 } else if (chunkX == this.catChunkX
                         && chunkY == this.catChunkY) {
@@ -242,17 +248,17 @@ game.ChunkGen = {
 
     makeDarkTileContents: function(x, y, level) {
         var sample = Math.random();
-        if (sample < 0.1) {
+        if (sample < 0.15) {
             return new game.BoneItem(x, y, level);
-        } else if (sample < 0.3) {
+        } else if (sample < 0.45) {
             return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.35) {
+        } else if (sample < 0.50) {
             return new game.TreasureItem(x, y, level, "ruby");
-        } else if (sample < 0.38) {
+        } else if (sample < 0.54) {
             return new game.PowerupItem(x, y, level, "sight");
-        } else if (sample < 0.41) {
+        } else if (sample < 0.56) {
             return new game.PowerupItem(x, y, level, "flame");
-        } else if (sample < 0.44) {
+        } else if (sample < 0.59) {
             return new game.PowerupItem(x, y, level, "speed");
         } else {
             return new game.TreasureItem(x, y, level, "nugget");
