@@ -3,12 +3,21 @@ game.PlayScreen = me.ScreenObject.extend({
 	 *  action to perform on state change
 	 */
 	onResetEvent: function() {
-		// reset the score
-		game.data.score = 0;
+        me.game.removeAll();
+        me.input.bindKey(me.input.KEY.A, "left", false);
+        me.input.bindKey(me.input.KEY.D, "right", false);
+        me.input.bindKey(me.input.KEY.W, "up", false);
+        me.input.bindKey(me.input.KEY.S, "down", false);
+        me.input.bindKey(me.input.KEY.ENTER, "action", false);
+        me.input.bindKey(me.input.KEY.SHIFT, "action", false);
+        me.input.bindKey(me.input.KEY.SPACE, "action", false);
 
-		// add our HUD to the game world
-		this.HUD = new game.HUD.Container();
-		me.game.world.addChild(this.HUD);
+        game.data.reset();
+        this.level = new game.BaseLevel(15, 15, 11); // 13 BONES IS GOOD
+        me.game.add(this.level, 0);
+
+        this.hud = new game.HUD.Container();
+        me.game.add(this.hud, 1000000);
 	},
 
 
@@ -16,7 +25,6 @@ game.PlayScreen = me.ScreenObject.extend({
 	 *  action to perform when leaving this screen (state change)
 	 */
 	onDestroyEvent: function() {
-		// remove the HUD from the game world
-		me.game.world.removeChild(this.HUD);
+		me.game.removeAll();
 	}
 });

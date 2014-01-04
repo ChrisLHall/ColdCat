@@ -4,7 +4,7 @@
 game.PlayerEntity = me.ObjectEntity.extend({
     init: function(blockX, blockY, level) {
         var settings = {};
-        settings.image = me.loader.getImage("tiles");
+        settings.image = me.loader.getImage("dog");
         settings.spritewidth = 16;
         settings.spriteheight = 16;
 
@@ -17,13 +17,29 @@ game.PlayerEntity = me.ObjectEntity.extend({
 
         this.collidable = true;
 
-        this.renderable.addAnimation("down", [15]);
-        this.renderable.setCurrentAnimation("down");
+        this.renderable.addAnimation("right_stand", [0, 1, 2, 3]);
+        this.renderable.addAnimation("left_stand", [4, 5, 6, 7]);
+        this.renderable.addAnimation("up_stand", [8, 9, 10, 11]);
+        this.renderable.addAnimation("down_stand", [12, 13, 14, 15]);
+
+        this.renderable.addAnimation("right_walk", [16, 17, 18, 19]);
+        this.renderable.addAnimation("left_walk", [20, 21, 22, 23]);
+        this.renderable.addAnimation("up_walk", [24, 25, 26, 27]);
+        this.renderable.addAnimation("down_walk", [28, 29, 30, 31]);
+
+        this.renderable.addAnimation("right_dig", [32, 33, 34, 35]);
+        this.renderable.addAnimation("left_dig", [36, 37, 38, 39]);
+        this.renderable.addAnimation("up_dig", [40, 41, 42, 43]);
+        this.renderable.addAnimation("down_dig", [44, 45, 46, 47]);
+        this.renderable.animationspeed = 100;
+        this.renderable.setCurrentAnimation("down_stand");
 
         this.blockX = blockX;
         this.blockY = blockY;
         this.level = level;
 
+        this.dir = "down";
+        this.anim = "down_stand";
         this.moving = false;
         this.motionTimer = 0;
         // function motionFunc(t), where t is the motion timer, which returns
@@ -39,6 +55,8 @@ game.PlayerEntity = me.ObjectEntity.extend({
     },
 
     update: function() {
+        this.parent(true);
+
         this.doPowerup();
         this.doDigControl();
 
@@ -46,6 +64,7 @@ game.PlayerEntity = me.ObjectEntity.extend({
         if (this.motionTimer <= 0) {
             this.motionTimer = 0;
             this.moving = false;
+            this.anim = this.dir + "_stand";
             if (this.diggingPos != null) {
                 if (!game.data.gotCat) {
                     game.data.timer = Math.max(0, game.data.timer
@@ -62,15 +81,19 @@ game.PlayerEntity = me.ObjectEntity.extend({
             this.pos.set(this.blockX * 16, this.blockY * 16);
 
             if (me.input.isKeyPressed("left")) {
+                this.dir = "left";
                 this.startMovingTo(this.blockX - 1, this.blockY);
             }
             if (me.input.isKeyPressed("right")) {
+                this.dir = "right";
                 this.startMovingTo(this.blockX + 1, this.blockY);
             }
             if (me.input.isKeyPressed("up")) {
+                this.dir = "up";
                 this.startMovingTo(this.blockX, this.blockY - 1);
             }
             if (me.input.isKeyPressed("down")) {
+                this.dir = "down";
                 this.startMovingTo(this.blockX, this.blockY + 1);
             }
         } else {
@@ -86,7 +109,9 @@ game.PlayerEntity = me.ObjectEntity.extend({
                 this.level.yView));
         me.game.viewport.pos.set(this.level.xView, this.level.yView);
 
-
+        if (!this.renderable.isCurrentAnimation(this.anim)) {
+            this.renderable.setCurrentAnimation(this.anim);
+        }
         return true;
     },
 
@@ -138,6 +163,7 @@ game.PlayerEntity = me.ObjectEntity.extend({
     startMovingTo: function (blockXEnd, blockYEnd) {
         if (!this.moving && this.level.inBounds(blockXEnd, blockYEnd)) {
             if (!this.level.isSolid(blockXEnd, blockYEnd)) {
+                this.anim = this.dir + "_walk";
                 this.moving = true;
                 this.motionTimer = Math.floor(10.0 / this.getSpeedMod());
                 this.motionFunc = this.moveBetweenFunc(this.pos.x, this.pos.y,
@@ -145,6 +171,7 @@ game.PlayerEntity = me.ObjectEntity.extend({
                 this.blockX = blockXEnd;
                 this.blockY = blockYEnd;
             } else if (this.digMode) {
+                this.anim = this.dir + "_dig";
                 this.moving = true;
                 this.motionTimer = Math.floor(30.0 / this.getDigSpeedMod());
                 this.motionFunc = this.stayStillFunc(this.blockX * 16,

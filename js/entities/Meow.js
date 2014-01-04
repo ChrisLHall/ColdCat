@@ -27,10 +27,12 @@ game.Meow = me.ObjectEntity.extend({
         this.startX = x;
         this.startY = y;
 
-        this.leftBound = -128;
-        this.rightBound = 144 - 24;
-        this.topBound = -88;
-        this.bottomBound = 104 - 24;
+        this.ctrX = 144;
+        this.ctrY = 108;
+        this.leftBound = -136;
+        this.rightBound = 136 - 24;
+        this.topBound = -100;
+        this.bottomBound = 100 - 24;
 
         this.counter = 30 + 20*Math.random();
 	},
@@ -42,7 +44,8 @@ game.Meow = me.ObjectEntity.extend({
         }
         if (this.level.player != null) {
             this.pos.set(this.startX, this.startY);
-            var p = this.level.player.pos;
+            var v = me.game.viewport.pos;
+            var p = new me.Vector2d(v.x + this.ctrX, v.y + this.ctrY);
             this.boundOnLeft(p);
             this.boundOnTop(p);
             this.boundOnRight(p);

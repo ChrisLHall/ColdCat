@@ -1,7 +1,7 @@
 game.BaseLevel = me.Renderable.extend({
     /** Initialize the base level with given position, width and height
      *  (in 16x16 block CHUNKS, made up of 16x16 pixel BLOCKS). */
-    init: function(chunksWidth, chunksHeight) {
+    init: function(chunksWidth, chunksHeight, timeBones) {
         this.view = new me.Vector2d(this.xView, this.yView);
 
         this.chunksX = chunksWidth;
@@ -91,7 +91,7 @@ game.BaseLevel = me.Renderable.extend({
             }
         }
 
-        game.data.timermax = game.data.BIGBONETIME * 13;
+        game.data.timermax = game.data.BIGBONETIME * timeBones;
         game.data.timer = game.data.timermax;
         game.data.timeTaken = 0;
 

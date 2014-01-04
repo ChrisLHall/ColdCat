@@ -13,14 +13,8 @@ game.HUD.Container = me.ObjectContainer.extend({
 		// call the constructor
 		this.parent();
 		
-		// persistent across level change
-		this.isPersistent = true;
-		
 		// non collidable
 		this.collidable = false;
-		
-		// make sure our object is always draw first
-		this.z = Infinity;
 
         this.autoSort = false;
 
@@ -62,6 +56,9 @@ game.HUD.Container = me.ObjectContainer.extend({
         }
         this.addChild(new game.HUD.BigCat(338, 168));
         this.addChild(new game.HUD.Powerup(298, 168));
+
+        this.addChild(new game.HUD.SuccessFailure(144, 108));
+
         this.addChild(new game.HUD.Overlay());
 	}
 });
@@ -480,3 +477,176 @@ game.HUD.StopwatchDigit = me.AnimationSheet.extend({
 		return false;
 	}
 });
+
+/** 
+ * The on-screen indicator that says "SUCCESS!" and "FAILURE".
+ */
+game.HUD.SuccessFailure = me.AnimationSheet.extend({
+	init: function(x, y) {
+		
+		// call the parent constructor 
+		// (size does not matter here)
+		this.parent(x, y, me.loader.getImage("successfail"), 96, 16);
+
+        this.addAnimation("success", [0]);
+        this.addAnimation("failure", [1]);
+        this.addAnimation("empty", [2]);
+        this.setCurrentAnimation("empty");
+
+        this.resize(3.0);
+        this.pos.set(x - 48, y - 8);
+		
+		// local copy of the global game timeTaken, except in hundredths of a
+        // second.
+		this.gameOver = false;
+        this.didWin = false;
+        this.deployedText = false;
+
+        this.gameOverCounter = 0;
+
+		// make sure we use screen coordinates
+		this.floating = true;
+	},
+
+	/**
+	 * update function
+	 */
+	update : function () {
+		if (!this.gameOver && (game.data.gotCat || game.data.playerLost)) {	
+			this.gameOver = true;
+            if (game.data.gotCat) {
+                this.didWin = true;
+                this.setCurrentAnimation("success");
+            } else {
+                this.didWin = false;
+                this.setCurrentAnimation("failure");
+            }
+			return true;
+		} else if (this.gameOver) {
+            this.gameOverCounter++;
+            if (this.gameOverCounter >= 60) {
+                if (this.didWin && !this.deployedText) {
+                    this.deployedText = true;
+                    me.state.current().hud.addChild(
+                            new game.HUD.NewHighscore(32, 144));
+                } else if (!this.didWin && !this.deployedText) {
+                    this.deployedText = true;
+                    var str = "Press any key to exit.";
+                    var exittext = new game.FancyText.String(32, 144,
+                            str.length, "red");
+                    exittext.setString(str);
+                    me.state.current().hud.addChild(exittext);
+                } else if (me.input.isKeyPressed("left")
+                        || me.input.isKeyPressed("right")
+                        || me.input.isKeyPressed("up")
+                        || me.input.isKeyPressed("down")
+                        || me.input.isKeyPressed("action")) {
+                    me.state.change(me.state.MENU);
+                }
+            }
+            return true;
+        }
+		return false;
+	}
+});
+
+/** 
+ * Object that allows the user to input initials for a high score.
+ */
+game.HUD.NewHighscore = me.AnimationSheet.extend({
+	init: function(x, y) {
+		this.parent(x, y, me.loader.getImage("initialarrows"), 8, 24);
+
+		// make sure we use screen coordinates
+		this.floating = true;
+		
+		this.startX = x;
+        this.startY = y;
+        var hsi = game.data.highScoreInitials;
+        var Acode = "A".charCodeAt(0);
+		this.initialCodes = [hsi.charCodeAt(0) - Acode,
+                hsi.charCodeAt(1) - Acode, hsi.charCodeAt(2) - Acode];
+
+        this.cursorPos = 0;
+        this.lastKeyPressed = "none";
+        this.keyPressCounter = 0;
+
+        var str = "New record! Initials:";
+        var mainText = new game.FancyText.String(x, y - 8, str.length,
+                "yellow");
+        mainText.setString(str);
+        me.state.current().hud.addChild(mainText);
+
+        this.initialsText = new game.FancyText.String(x, y + 8, 3, "green");
+        this.initialsText.setString(hsi);
+        me.state.current().hud.addChild(this.initialsText);
+	},
+
+	/**
+	 * update function
+	 */
+	update : function () {
+        var key = "none";
+        var doAction = false;
+        if (me.input.isKeyPressed("left")) { key = "left"; }
+        if (me.input.isKeyPressed("right")) { key = "right"; }
+        if (me.input.isKeyPressed("up")) { key = "up"; }
+        if (me.input.isKeyPressed("down")) { key = "down"; }
+        if (me.input.isKeyPressed("action")) { key = "action"; }
+
+        if (key == this.lastKeyPressed) {
+            this.keyPressCounter++;
+            if ((this.keyPressCounter == 1) || (this.keyPressCounter > 30
+                    && this.keyPressCounter % 8 == 4 && key != "action")) {
+                doAction = true;
+            }
+        } else {
+            this.keyPressCounter = 0;
+            this.lastKeyPressed = key;
+        }
+
+		if (!doAction) { return false; }
+
+        if (key == "left") {
+            this.cursorPos--;
+            if (this.cursorPos < 0) { this.cursorPos = 2; }
+            this.pos.set(this.startX + 8*this.cursorPos, this.startY);
+        } else if (key == "right") {
+            this.cursorPos++;
+            if (this.cursorPos > 2) { this.cursorPos = 0; }
+            this.pos.set(this.startX + 8*this.cursorPos, this.startY);
+        } else if (key == "up") {
+            var letterCode = this.initialCodes[this.cursorPos];
+            letterCode++;
+            if (letterCode > 25) { letterCode = 0; }
+            this.initialCodes[this.cursorPos] = letterCode;
+            this.initialsText.setString(this.getInitialsString());
+        } else if (key == "down") {
+            var letterCode = this.initialCodes[this.cursorPos];
+            letterCode--;
+            if (letterCode < 0) { letterCode = 25; }
+            this.initialCodes[this.cursorPos] = letterCode;
+            this.initialsText.setString(this.getInitialsString());
+        } else if (key == "action") {
+            if (this.cursorPos < 2) {
+                this.cursorPos++;
+                this.pos.set(this.startX + 8*this.cursorPos, this.startY);
+            } else {
+                // TODO APPLY HIGHSCORE TO THE TABLE SOMEHOW
+                me.state.change(me.state.MENU);
+            }
+        }
+
+		return true;
+	},
+
+    getInitialsString: function() {
+        var Acode = "A".charCodeAt(0);
+        var str = "";
+        str += String.fromCharCode(Acode + this.initialCodes[0]);
+        str += String.fromCharCode(Acode + this.initialCodes[1]);
+        str += String.fromCharCode(Acode + this.initialCodes[2]);
+        return str;
+    },
+});
+

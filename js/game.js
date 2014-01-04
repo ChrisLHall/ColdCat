@@ -8,15 +8,28 @@ var game = {
         BIGBONETIME: 480,
         DIGCOST: 15,
 		// score
-		score : 0,
-        timer : 6000,
-        timermax : 6000,
-        timeTaken : 0,
+		score : -1,
+        timer : -1,
+        timermax : -1,
+        timeTaken : -1,
         gotCat : false,
         closeToCat : false,
         playerLost : false,
+        highScoreInitials : "AAA",
         powerupAnim : null,
-        powerupBlinking : false
+        powerupBlinking : false,
+
+        reset: function() {
+            this.score = 0;
+            this.timer = 6000;
+            this.timermax = 6000;
+            this.timeTaken = 0;
+            this.gotCat = false;
+            this.closeToCat = false;
+            this.playerLost = false;
+            this.powerupAnim = null;
+            this.powerupBlinking = false;
+        }
 	},
 	
 	

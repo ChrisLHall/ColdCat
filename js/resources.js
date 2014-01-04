@@ -5,6 +5,7 @@ game.resources = [
 	 * {name: "example", type:"image", src: "data/img/example.png"},
 	 */
     {name: "tiles", type: "image", src: "data/img/sprites.png"},
+    {name: "dog", type: "image", src: "data/img/dog.png"},
     {name: "overlay", type: "image", src: "data/img/HUD.png"},
     {name: "timebone", type: "image", src: "data/img/bone.png"},
     {name: "bigtimebone", type: "image", src: "data/img/bigbone.png"},
@@ -13,7 +14,13 @@ game.resources = [
     {name: "moneyfont", type: "image", src: "data/img/moneyfont.png"},
     {name: "stopwatch", type: "image", src: "data/img/stopwatch.png"},
     {name: "stopwatchfont", type: "image", src: "data/img/stopwatchfont.png"},
-    {name: "meowyell", type: "image", src: "data/img/meowyell.png"}
+    {name: "meowyell", type: "image", src: "data/img/meowyell.png"},
+    {name: "successfail", type: "image", src: "data/img/successfail.png"},
+    {name: "bluefont", type: "image", src: "data/img/bluefont.png"},
+    {name: "redfont", type: "image", src: "data/img/redfont.png"},
+    {name: "yellowfont", type: "image", src: "data/img/yellowfont.png"},
+    {name: "greenfont", type: "image", src: "data/img/greenfont.png"},
+    {name: "initialarrows", type: "image", src: "data/img/selectarrows.png"},
 
 	/* Atlases 
 	 * @example

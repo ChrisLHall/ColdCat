@@ -11,9 +11,7 @@ game.TitleScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SHIFT, "action", false);
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
 
-        me.game.add(new game.BaseLevel(15, 15), 0);
-
-        me.game.add(new game.HUD.Container(), 1000000);
+        me.state.change(me.state.PLAY);
 	},
 	
 	
@@ -21,6 +19,6 @@ game.TitleScreen = me.ScreenObject.extend({
 	 *  action to perform when leaving this screen (state change)
 	 */
 	onDestroyEvent: function() {
-		; // TODO
+		me.game.removeAll();
 	}
 });
