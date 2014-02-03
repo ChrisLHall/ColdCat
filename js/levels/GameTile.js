@@ -6,7 +6,8 @@ game.GameTileTypes = {
     "empty": [ "empty0", "empty1", "empty2" ],
     "ice": [ "ice0" ],
     "dark": [ "dark0" ],
-    "all": [ "empty0", "empty1", "empty2", "ice0", "dark0" ]
+    "cat": [ "cat0" ],
+    "all": [ "empty0", "empty1", "empty2", "ice0", "dark0" , "cat0" ]
 };
 
 game.GameTileFrames = {
@@ -15,7 +16,8 @@ game.GameTileFrames = {
     "empty1": [20],
     "empty2": [30],
     "ice0": [11],
-    "dark0": [12]
+    "dark0": [12],
+    "cat0": [13],
 };
 
 /**
@@ -87,7 +89,8 @@ game.GameTile = me.ObjectEntity.extend({
         }
 
         if (game.GameTileTypes["ice"].indexOf(this.type) > -1
-                || game.GameTileTypes["dark"].indexOf(this.type) > -1) {
+                || game.GameTileTypes["dark"].indexOf(this.type) > -1
+                || game.GameTileTypes["cat"].indexOf(this.type) > -1) {
             this.setType("empty");
             this.yieldContents();
             this.seeThrough = true;

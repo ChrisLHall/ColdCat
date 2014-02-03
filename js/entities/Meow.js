@@ -1,5 +1,5 @@
 /** 
- * Meow circle object.
+ * Meow speech bubble object.
  */
 game.Meow = me.ObjectEntity.extend({	
     init: function(x, y, level) {

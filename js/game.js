@@ -63,6 +63,16 @@ var game = {
 
 	// Run on game resources loaded.
 	"loaded" : function () {
+        /* Load local highscore data. */
+        var scoreRecords = {"small": [], "medium": [], "large": []};
+        var timeRecords = {"small": [], "medium": [], "large": []};
+        for (var i = 0; i < 10; i++) {
+            scoreRecords[i] = {initials: "AAA", score: 0, time: 359999};
+            timeRecords[i] = {initials: "AAA", score: 0, time: 359999};
+        }
+        me.save.complexObject = {bestScores: scoreRecords,
+                bestTimes: timeRecords};
+
 		me.state.set(me.state.MENU, new game.TitleScreen());
 		me.state.set(me.state.PLAY, new game.PlayScreen());
 

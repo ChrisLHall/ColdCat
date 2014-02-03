@@ -11,6 +11,8 @@ game.TitleScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SHIFT, "action", false);
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
 
+        this.title = new game.TitleGfx.Container();
+        me.game.add(this.title, 1000000);
         me.state.change(me.state.PLAY);
 	},
 	

@@ -536,11 +536,11 @@ game.HUD.SuccessFailure = me.AnimationSheet.extend({
                             str.length, "red");
                     exittext.setString(str);
                     me.state.current().hud.addChild(exittext);
-                } else if (me.input.isKeyPressed("left")
+                } else if (!this.didWin && (me.input.isKeyPressed("left")
                         || me.input.isKeyPressed("right")
                         || me.input.isKeyPressed("up")
                         || me.input.isKeyPressed("down")
-                        || me.input.isKeyPressed("action")) {
+                        || me.input.isKeyPressed("action"))) {
                     me.state.change(me.state.MENU);
                 }
             }
@@ -571,7 +571,7 @@ game.HUD.NewHighscore = me.AnimationSheet.extend({
         this.lastKeyPressed = "none";
         this.keyPressCounter = 0;
 
-        var str = "New record! Initials:";
+        var str = "Good job! Initials:";
         var mainText = new game.FancyText.String(x, y - 8, str.length,
                 "yellow");
         mainText.setString(str);

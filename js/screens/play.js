@@ -3,7 +3,6 @@ game.PlayScreen = me.ScreenObject.extend({
 	 *  action to perform on state change
 	 */
 	onResetEvent: function() {
-        me.game.removeAll();
         me.input.bindKey(me.input.KEY.A, "left", false);
         me.input.bindKey(me.input.KEY.D, "right", false);
         me.input.bindKey(me.input.KEY.W, "up", false);
@@ -13,7 +12,7 @@ game.PlayScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
 
         game.data.reset();
-        this.level = new game.BaseLevel(15, 15, 11); // 13 BONES IS GOOD
+        this.level = new game.BaseLevel(15, 15, 13);
         me.game.add(this.level, 0);
 
         this.hud = new game.HUD.Container();

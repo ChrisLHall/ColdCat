@@ -86,7 +86,9 @@ game.BaseLevel = me.Renderable.extend({
                     exitUp: exitU,
                     exitDown: 2 + Math.floor(12 * Math.random()),
                     treasureCaves: treasureCaveList,
-                    contents: null
+                    isBlockArray: null,
+                    contents: null,
+                    contentsFinished: false
                 };
             }
         }
@@ -124,6 +126,8 @@ game.BaseLevel = me.Renderable.extend({
                         this), 1000);
             }
             if (this.player != null) {
+                game.ChunkGen.makeNearestBlock(
+                        this.player.blockX, this.player.blockY, this);
                 var squareDist =
                         Math.pow(this.player.pos.x - 16*this.catBlockX, 2)
                         + Math.pow(this.player.pos.y - 16*this.catBlockY, 2);
@@ -160,23 +164,26 @@ game.BaseLevel = me.Renderable.extend({
 
     get: function(x, y) {
         var cX = Math.floor(x / 16);
-        var dX = x - 16 * cX;
+        var dX = x % 16;
         var cY = Math.floor(y / 16);
-        var dY = y - 16 * cY;
+        var dY = y % 16;
         var chunk = this.getChunk(cX, cY);
-        if (chunk.contents == null) {
+        if (chunk.isBlockArray == null) {
             this.populateChunk(cX, cY);
+            game.ChunkGen.makeContents(chunk, x, y, this);
+        } else if (chunk.contents[dY][dX] == null) {
+            game.ChunkGen.makeContents(chunk, x, y, this);
         }
         return chunk.contents[dY][dX];
     },
 
     set: function(x, y, tile) {
         var cX = Math.floor(x / 16);
-        var dX = x - 16 * cX;
+        var dX = x % 16;
         var cY = Math.floor(y / 16);
-        var dY = y - 16 * cY;
+        var dY = y % 16;
         var chunk = this.getChunk(cX, cY);
-        if (chunk.contents == null) {
+        if (chunk.isBlockArray == null) {
             this.populateChunk(cX, cY);
         }
         chunk.contents[dY][dX] = tile;
@@ -188,21 +195,20 @@ game.BaseLevel = me.Renderable.extend({
 
     populateChunk: function(chunkX, chunkY) {
         var chunk = this.getChunk(chunkX, chunkY);
-        var newContents = [];
+        chunk.isBlockArray = game.ChunkGen.genIsBlockArray();
+        chunk.contents = game.ChunkGen.genEmptyContents();
 
         if (chunk.type == "normal") {
-            newContents = game.ChunkGen.genCaveChunk(this, chunkX, chunkY);
+            game.ChunkGen.genCaveChunk(chunk, this, chunkX, chunkY);
         } else if (chunk.type == "treasure") {
-            newContents = game.ChunkGen.genTreasureChunk(this, chunkX, chunkY);
+            game.ChunkGen.genTreasureChunk(chunk, this, chunkX, chunkY);
         } else if (chunk.type == "player") {
-            newContents = game.ChunkGen.genPlayerChunk(this, chunkX, chunkY);
+            game.ChunkGen.genPlayerChunk(chunk, this, chunkX, chunkY);
         } else if (chunk.type == "cat") {
-            newContents = game.ChunkGen.genCatChunk(this, chunkX, chunkY);
+            game.ChunkGen.genCatChunk(chunk, this, chunkX, chunkY);
         } else {
-            newContents = game.ChunkGen.genUnknownChunk(this, chunkX, chunkY);
+            game.ChunkGen.genUnknownChunk(chunk, this, chunkX, chunkY);
         }
-
-        chunk.contents = newContents;
     },
 
     isSolid: function(x, y) {
@@ -289,28 +295,25 @@ game.ChunkGen = {
         }
     },
 
-    genUnknownChunk: function(level, chunkX, chunkY) {
+    genUnknownChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
-        var newContents = [];
+        var newContents = chunk.contents;
         for (var y = 0; y < 16; y++) {
-            newContents[y] = []
             for (var x = 0; x < 16; x++) {
                 newContents[y][x] = new game.GameTile(xStart + x,
                         yStart + y, "unknown", null, false);
             }
         }
-        return newContents;
+        chunk.contentsFinished = true;
     },
 
-    genPlayerChunk: function(level, chunkX, chunkY) {
+    genPlayerChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
-        var newContents = [];
+        var newContents = chunk.contents;
         for (var y = 0; y < 16; y++) {
-            newContents[y] = []
             for (var x = 0; x < 16; x++) {
-                newContents[y][x] = null;
                 var sample = Math.random();
                 if (sample < 0.6) {
                     newContents[y][x] = new game.GameTile(xStart + x,
@@ -321,18 +324,16 @@ game.ChunkGen = {
                 }
             }
         }
-        return newContents;
+        chunk.contentsFinished = true;
     },
 
-    genNormalChunk: function(level, chunkX, chunkY) {
+    genNormalChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
-        var newContents = [];
+        var newContents = chunk.contents;
 
         for (var y = 0; y < 16; y++) {
-            newContents[y] = []
             for (var x = 0; x < 16; x++) {
-                newContents[y][x] = null;
                 var sample = Math.random();
                 if (sample < 0.04) {
                     var inside = this.makeDarkTileContents(
@@ -350,26 +351,24 @@ game.ChunkGen = {
                 }
             }
         }
-        return newContents;
+        chunk.contentsFinished = true;
     },
 
-    genCatChunk: function(level, chunkX, chunkY) {
+    genCatChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
-        var newContents = [];
+        var newContents = chunk.contents;
 
         var xCat = level.catBlockX - 16*chunkX;
         var yCat = level.catBlockY - 16*chunkY;
 
         for (var y = 0; y < 16; y++) {
-            newContents[y] = []
             for (var x = 0; x < 16; x++) {
-                newContents[y][x] = null;
                 if (x == xCat && y == yCat) {
                     var cat = new game.CatItem((xStart + x) * 16,
                             (yStart + y) * 16, level);
                     newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "dark", cat, false);
+                            yStart + y, "cat", cat, false);
                     continue;
                 }
                 var sample = Math.random();
@@ -389,23 +388,22 @@ game.ChunkGen = {
                 }
             }
         }
-        return newContents;
+        chunk.contentsFinished = true;
     },
 
-    genCaveChunk: function(level, chunkX, chunkY) {
+    genCaveChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
-        var newContents = [];
-        var isBlock = this.genIsBlockArray();
+        var isBlock = chunk.isBlockArray;
 
         var caveArray = this.caveShapes[
                 Math.floor(Math.random() * this.caveShapes.length)];
         var caYOffset = -Math.floor(caveArray.length / 2);
         var caXOffset = -Math.floor(caveArray[0].length / 2);
 
-        var chunk = level.getChunk(chunkX, chunkY);
         this.applyBlockShape(isBlock, caveArray, chunk.caveX + caXOffset,
                 chunk.caveY + caYOffset);
+
         var tunnelChance = 0.75;
         if (Math.random() < tunnelChance) {
             this.digTunnel(isBlock, 0, chunk.exitLeft,
@@ -430,20 +428,12 @@ game.ChunkGen = {
             this.applyBlockShape(isBlock, tCave, chunk.treasureCaves[i].x - 1,
                     chunk.treasureCaves[i].y - 1);
         }
-
-        var tiles = this.contentsFromBlockArray(isBlock, chunk.treasureCaves,
-                xStart, yStart, level);
-
-        return tiles;
     },
 
-    genTreasureChunk: function(level, chunkX, chunkY) {
+    genTreasureChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
-        var newContents = [];
-        var isBlock = this.genIsBlockArray();
-
-        var chunk = level.getChunk(chunkX, chunkY);
+        var isBlock = chunk.isBlockArray;
 
         for (var i = 0; i < chunk.treasureCaves.length; i++) {
             var tCave = this.treasureCaveShapes[
@@ -451,11 +441,6 @@ game.ChunkGen = {
             this.applyBlockShape(isBlock, tCave, chunk.treasureCaves[i].x - 1,
                     chunk.treasureCaves[i].y - 1);
         }
-
-        var tiles = this.contentsFromBlockArray(isBlock, chunk.treasureCaves,
-                xStart, yStart, level);
-
-        return tiles;
     },
 
     /** Digs a random tunnel through BLOCKARRAY starting at (XSTART, YSTART) and
@@ -508,50 +493,109 @@ game.ChunkGen = {
         }
     },
 
-    /** Finally, generate an array of game tiles from an array of 0s and 1s
-     *  BLOCKARRAY. Start the game tiles at block coordinates XSTART, YSTART
-     *  given the LEVEL. Place treasures at locations in TREASURES. */
-    contentsFromBlockArray: function(blockArray, treasures, xStart, yStart,
-            level) {
+    /** Create an empty contents array. */
+    genEmptyContents: function() {
         var contents = [];
         for (var y = 0; y < 16; y++) {
             contents[y] = [];
             for (var x = 0; x < 16; x++) {
                 contents[y][x] = null;
-                var inside = null;
-                var type = "empty";
-
-                for (var i = 0; i < treasures.length; i++) {
-                    if (treasures[i].x == x && treasures[i].y == y) {
-                        inside = this.makeCaveTreasure((xStart + x) * 16,
-                                (yStart + y) * 16, level);
-                    }
-                }
-
-                if (blockArray[y][x] == 1) {
-                    var sample = Math.random();
-                    if (sample < 0.06) {
-                        inside = this.makeDarkTileContents(
-                                (xStart + x) * 16, (yStart + y) * 16, level);
-                        type = "dark";
-                    } else if (sample < 0.18) {
-                        inside = inside || this.makeEmptyTileContents(
-                                (xStart + x) * 16, (yStart + y) * 16, level);
-                        type = "empty";
-                    } else {
-                        inside = null;
-                        type = "ice";
-                    }
-                } else {
-                    inside = inside || this.makeEmptyCaveContents(
-                            (xStart + x) * 16, (yStart + y) * 16, level);
-                    type = "empty";
-                }
-                contents[y][x] = new game.GameTile(xStart + x,
-                        yStart + y, type, inside, false);
             }
         }
         return contents;
+    },
+
+    /** Finally, generate a game tile from an array of 0s and 1s
+     *  blockarray from CHUNK. Start the game tiles at block coordinates X, Y
+     *  given the LEVEL. Place treasures at locations in the chunk. */
+    makeContents: function(chunk, x, y, level) {
+        //DEBUG
+        console.log("Making block (" + x.toString() + ", " + y.toString() + "); Time:" + Date.now().toString());
+        var blockArray = chunk.isBlockArray;
+        var treasures = chunk.treasureCaves;
+        var contents = chunk.contents;
+
+        var xOff = x % 16;
+        var yOff = y % 16;
+        var xStart = x - xOff;
+        var yStart = y - yOff;
+
+        var inside = null;
+        var type = "empty";
+
+        for (var i = 0; i < treasures.length; i++) {
+            if (treasures[i].xOff == xOff
+                    && treasures[i].yOff == yOff) {
+                inside = this.makeCaveTreasure(x * 16, y * 16, level);
+            }
+        }
+
+        if (blockArray[yOff][xOff] == 1) {
+            var sample = Math.random();
+            if (sample < 0.06) {
+                inside = inside || this.makeDarkTileContents(
+                        x * 16, y * 16, level);
+                type = "dark";
+            } else if (sample < 0.18) {
+                inside = inside || this.makeEmptyTileContents(
+                        x * 16, y * 16, level);
+                type = "empty";
+            } else {
+                inside = null;
+                type = "ice";
+            }
+        } else {
+            inside = inside || this.makeEmptyCaveContents(
+                    x * 16, y * 16, level);
+            type = "empty";
+        }
+        contents[yOff][xOff] = new game.GameTile(x, y, type, inside, false);
+    },
+
+    /** Choose the nearest block to the dog and create it. X distances less than
+     *  8 and Y distances less than 6 count as 0. */
+    makeNearestBlock: function(playerX, playerY, level) {
+        var x, y, cX, cY, chunk, cXOff, cYOff, dX, dY;
+        var closestDist = 1000;
+        var xClosest = -1;
+        var yClosest = -1;
+
+        for (var xOff = -24; xOff < 24; xOff++) {
+            for (var yOff = -24; yOff < 24; yOff++) {
+                x = playerX + xOff;
+                y = playerY + yOff;
+                cX = Math.floor(x / 16.0);
+                cY = Math.floor(y / 16.0);
+
+                if (!level.inBounds(x, y)
+                        || level.getChunk(cX, cY) == null
+                        || level.getChunk(cX, cY).isBlockArray == null) {
+                    continue;
+                }
+
+                chunk = level.getChunk(cX, cY);
+                cXOff = x % 16;
+                cYOff = y % 16;
+
+                dX = Math.max(0, Math.abs(xOff) - 8);
+                dY = Math.max(0, Math.abs(yOff) - 6);
+
+                if (chunk.contents[cYOff][cXOff] == null
+                        && dX + dY < closestDist) {
+                    closestDist = dX + dY;
+                    xClosest = x;
+                    yClosest = y;
+                }
+            }
+        }
+
+        if (closestDist != 1000) {
+            cX = Math.floor(xClosest / 16.0);
+            cY = Math.floor(yClosest / 16.0);
+            chunk = level.getChunk(cX, cY);
+
+            this.makeContents(chunk, xClosest, yClosest, level);
+        }
     },
 
     caveShapes: [
@@ -562,6 +606,30 @@ game.ChunkGen = {
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [1, 0, 0, 0, 0, 1],
+        ],
+
+        [
+            [1, 1, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 1],
+            [1, 1, 0, 0, 1, 1],
+        ],
+
+        [
+            [1, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 1],
+        ],
+
+        [
+            [1, 0, 0, 1],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [1, 0, 0, 1],
         ],
     ],
 
