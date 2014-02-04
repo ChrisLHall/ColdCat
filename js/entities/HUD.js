@@ -491,6 +491,7 @@ game.HUD.SuccessFailure = me.AnimationSheet.extend({
         this.deployedText = false;
 
         this.gameOverCounter = 0;
+        this.showHighscoreCounter = 0;
 
 		// make sure we use screen coordinates
 		this.floating = true;
@@ -514,9 +515,21 @@ game.HUD.SuccessFailure = me.AnimationSheet.extend({
             this.gameOverCounter++;
             if (this.gameOverCounter >= 60) {
                 if (this.didWin && !this.deployedText) {
-                    this.deployedText = true;
-                    me.state.current().hud.addChild(
-                            new game.HUD.NewHighscore(32, 144));
+                    this.showHighscoreCounter++;
+                    if (game.data.timer > 0
+                            && this.showHighscoreCounter >= 15) {
+                        this.showHighscoreCounter = 0;
+                        if (game.data.timer >= game.data.BIGBONETIME) {
+                            game.data.timer -= game.data.BIGBONETIME;
+                            game.data.score += game.data.BIGBONEPOINTS;
+                        } else {
+                            game.data.timer = 0;
+                        }
+                    } else if (this.showHighscoreCounter >= 60) {
+                        this.deployedText = true;
+                        me.state.current().hud.addChild(
+                                new game.HUD.NewHighscore(32, 144));
+                    }
                 } else if (!this.didWin && !this.deployedText) {
                     this.deployedText = true;
                     var str = "Press any key to exit.";

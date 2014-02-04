@@ -233,11 +233,11 @@ game.BaseLevel = me.Renderable.extend({
 game.ChunkGen = {
     makeEmptyTileContents: function(x, y, level) {
         var sample = Math.random();
-        if (sample < 0.01) {
+        if (sample < 0.025) {
             return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.03) {
+        } else if (sample < 0.065) {
             return new game.TreasureItem(x, y, level, "nugget");
-        } else if (sample < 0.035) {
+        } else if (sample < 0.08) {
             return new game.BoneItem(x, y, level);
         }
         return null;
@@ -245,9 +245,9 @@ game.ChunkGen = {
 
     makeEmptyCaveContents: function(x, y, level) {
         var sample = Math.random();
-        if (sample < 0.003) {
+        if (sample < 0.006) {
             return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.01) {
+        } else if (sample < 0.02) {
             return new game.TreasureItem(x, y, level, "nugget");
         }
         return null;
@@ -260,13 +260,13 @@ game.ChunkGen = {
             return new game.BoneItem(x, y, level);
         } else if (sample < 0.45) {
             return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.50) {
+        } else if (sample < 0.51) {
             return new game.TreasureItem(x, y, level, "ruby");
-        } else if (sample < 0.54) {
+        } else if (sample < 0.57) {
             return new game.PowerupItem(x, y, level, "sight");
-        } else if (sample < 0.56) {
+        } else if (sample < 0.61) {
             return new game.PowerupItem(x, y, level, "flame");
-        } else if (sample < 0.59) {
+        } else if (sample < 0.66) {
             return new game.PowerupItem(x, y, level, "speed");
         } else {
             return new game.TreasureItem(x, y, level, "nugget");
@@ -275,9 +275,9 @@ game.ChunkGen = {
 
     makeDarkTreasureContents: function(x, y, level) {
         var sample = Math.random();
-        if (sample < 0.1) {
+        if (sample < 0.2) {
             return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.11) {
+        } else if (sample < 0.25) {
             return new game.TreasureItem(x, y, level, "ruby");
         } else {
             return new game.TreasureItem(x, y, level, "nugget");
@@ -374,12 +374,12 @@ game.ChunkGen = {
                     continue;
                 }
                 var sample = Math.random();
-                if (sample < 0.08) {
+                if (sample < 0.12) {
                     var inside = this.makeDarkTreasureContents(
                             (xStart + x) * 16, (yStart + y) * 16, level);
                     newContents[y][x] = new game.GameTile(xStart + x,
                             yStart + y, "dark", inside, false);
-                } else if (sample < 0.2) {
+                } else if (sample < 0.20) {
                     var inside = this.makeEmptyTileContents(
                             (xStart + x) * 16, (yStart + y) * 16, level);
                     newContents[y][x] = new game.GameTile(xStart + x,
@@ -532,11 +532,11 @@ game.ChunkGen = {
 
         if (blockArray[yOff][xOff] == 1) {
             var sample = Math.random();
-            if (sample < 0.06) {
+            if (sample < 0.08) {
                 inside = inside || this.makeDarkTileContents(
                         x * 16, y * 16, level);
                 type = "dark";
-            } else if (sample < 0.18) {
+            } else if (sample < 0.25) {
                 inside = inside || this.makeEmptyTileContents(
                         x * 16, y * 16, level);
                 type = "empty";

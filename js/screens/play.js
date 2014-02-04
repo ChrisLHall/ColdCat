@@ -17,7 +17,7 @@ game.PlayScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.ESC, "exit", false);
 
         game.data.reset();
-        this.level = new game.BaseLevel(15, 15, 13);
+        this.level = new game.BaseLevel(12, 12, 11);
         me.game.add(this.level, 0);
 
         this.hud = new game.HUD.Container();

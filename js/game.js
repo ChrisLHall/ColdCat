@@ -6,7 +6,8 @@ var game = {
 	data : {
         // constants, DO NOT CHANGE THESE
         BIGBONETIME: 480,
-        DIGCOST: 15,
+        BIGBONEPOINTS: 1000,
+        DIGCOST: 5,
 		// score
 		score : -1,
         timer : -1,
