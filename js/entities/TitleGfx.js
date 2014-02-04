@@ -141,7 +141,7 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
         this.addMenuItem("New Game", "blue");
         this.addMenuItem("Highscores", "blue");
         // The extra space after 'On' is to fit the string 'Sound Off'
-        this.addMenuItem("Sound On ", "blue");
+        this.addMenuItem("No sound yet      ", "blue");
         // Likewise, this item has to fit 'Are you sure?'
         this.addMenuItem("Clear Data   ", "red");
 
@@ -208,9 +208,9 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
         this.parent();
 
         if (game.settings.soundOn) {
-            this.menuItems[2].setString("Sound On");
+            this.menuItems[2].setString("No sound yet (On)");
         } else {
-            this.menuItems[2].setString("Sound Off");
+            this.menuItems[2].setString("No sound yet (Off)");
         }
 
         if (me.input.isKeyPressed("up")) {
