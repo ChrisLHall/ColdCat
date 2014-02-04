@@ -7,9 +7,14 @@ game.PlayScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.D, "right", false);
         me.input.bindKey(me.input.KEY.W, "up", false);
         me.input.bindKey(me.input.KEY.S, "down", false);
+        me.input.bindKey(me.input.KEY.LEFT, "left", false);
+        me.input.bindKey(me.input.KEY.RIGHT, "right", false);
+        me.input.bindKey(me.input.KEY.UP, "up", false);
+        me.input.bindKey(me.input.KEY.DOWN, "down", false);
         me.input.bindKey(me.input.KEY.ENTER, "action", false);
         me.input.bindKey(me.input.KEY.SHIFT, "action", false);
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
+        me.input.bindKey(me.input.KEY.ESC, "exit", false);
 
         game.data.reset();
         this.level = new game.BaseLevel(15, 15, 13);

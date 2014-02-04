@@ -21,6 +21,12 @@ game.resources = [
     {name: "yellowfont", type: "image", src: "data/img/yellowfont.png"},
     {name: "greenfont", type: "image", src: "data/img/greenfont.png"},
     {name: "initialarrows", type: "image", src: "data/img/selectarrows.png"},
+    {name: "menubg", type: "image", src: "data/img/menubg.png"},
+    {name: "titledog", type: "image", src: "data/img/titledog.png"},
+    {name: "menuarrow", type: "image", src: "data/img/menuarrow.png"},
+    {name: "highscorebg", type: "image", src: "data/img/highscorebg.png"},
+    {name: "highscoretitle", type: "image", src: "data/img/highscoretitle.png"},
+
 
 	/* Atlases 
 	 * @example

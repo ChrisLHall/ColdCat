@@ -127,7 +127,8 @@ game.BaseLevel = me.Renderable.extend({
             }
             if (this.player != null) {
                 game.ChunkGen.makeNearestBlock(
-                        this.player.blockX, this.player.blockY, this);
+                        Math.round(this.player.pos.x / 16),
+                        Math.round(this.player.pos.y / 16), this);
                 var squareDist =
                         Math.pow(this.player.pos.x - 16*this.catBlockX, 2)
                         + Math.pow(this.player.pos.y - 16*this.catBlockY, 2);
@@ -254,6 +255,7 @@ game.ChunkGen = {
 
     makeDarkTileContents: function(x, y, level) {
         var sample = Math.random();
+
         if (sample < 0.15) {
             return new game.BoneItem(x, y, level);
         } else if (sample < 0.45) {
@@ -509,8 +511,6 @@ game.ChunkGen = {
      *  blockarray from CHUNK. Start the game tiles at block coordinates X, Y
      *  given the LEVEL. Place treasures at locations in the chunk. */
     makeContents: function(chunk, x, y, level) {
-        //DEBUG
-        console.log("Making block (" + x.toString() + ", " + y.toString() + "); Time:" + Date.now().toString());
         var blockArray = chunk.isBlockArray;
         var treasures = chunk.treasureCaves;
         var contents = chunk.contents;
@@ -524,8 +524,8 @@ game.ChunkGen = {
         var type = "empty";
 
         for (var i = 0; i < treasures.length; i++) {
-            if (treasures[i].xOff == xOff
-                    && treasures[i].yOff == yOff) {
+            if (treasures[i].x == xOff
+                    && treasures[i].y == yOff) {
                 inside = this.makeCaveTreasure(x * 16, y * 16, level);
             }
         }
@@ -560,8 +560,9 @@ game.ChunkGen = {
         var xClosest = -1;
         var yClosest = -1;
 
-        for (var xOff = -24; xOff < 24; xOff++) {
-            for (var yOff = -24; yOff < 24; yOff++) {
+        for (var xOff = -15; xOff < 15; xOff++) {
+            for (var yOff = -12; yOff < 12; yOff++) {
+                if (Math.abs(xOff) <= 8 && Math.abs(yOff) <= 6) continue;
                 x = playerX + xOff;
                 y = playerY + yOff;
                 cX = Math.floor(x / 16.0);

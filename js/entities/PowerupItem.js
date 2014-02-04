@@ -83,9 +83,9 @@ game.PowerupItem.types = {
         onStart: function(player, level) {
         },
         onUpdate: function(player, level, timeLeft) {
-            if (timeLeft % 10 == 0) {
-                var blockX = Math.floor((player.pos.x + 8) / 16);
-                var blockY = Math.floor((player.pos.y + 8) / 16);
+            if (timeLeft % 2 == 0) {
+                var blockX = Math.round(player.pos.x / 16);
+                var blockY = Math.round(player.pos.y / 16);
                 for (var xOff = -1; xOff <= 1; xOff++) {
                     for (var yOff = -1; yOff <= 1; yOff++) {
                         if (level.inBounds(blockX + xOff, blockY + yOff)

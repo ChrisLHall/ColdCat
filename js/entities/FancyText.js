@@ -8,7 +8,7 @@ game.FancyText.String = me.ObjectContainer.extend({
      *  one of "red", "blue", "green" or "yellow". */
 	init: function(x, y, maxLength, type) {
 		// call the constructor
-		this.parent();
+		this.parent(x, y);
 
 		// non collidable
 		this.collidable = false;

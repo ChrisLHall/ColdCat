@@ -30,34 +30,15 @@ game.HUD.Container = me.ObjectContainer.extend({
 
         var digitsX = 298;
         var digitsY = 100;
-        this.addChild(new game.HUD.StopwatchDigit(digitsX, digitsY,
-                "#", 60000, 600000));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 8, digitsY,
-                "#", 6000, 60000));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 16, digitsY,
-                "'", 0, 0));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 24, digitsY,
-                "#", 1000, 6000));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 32, digitsY,
-                "#", 100, 1000));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 40, digitsY,
-                ".", 0, 0));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 48, digitsY,
-                "#", 10, 100));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 56, digitsY,
-                "#", 1, 10));
-        this.addChild(new game.HUD.StopwatchDigit(digitsX + 64, digitsY,
-                "\"", 0, 0));
+        this.addChild(new game.HUD.StopwatchTime(digitsX, digitsY));
 
-        this.addChild(new game.HUD.ScoreDigit(300, 132, -1));
-        for (var digit = 0; digit < 7; digit++) {
-            this.addChild(new game.HUD.ScoreDigit(308 + digit*8, 132,
-                    6 - digit));
-        }
+        this.addChild(new game.HUD.Score(300, 132));
+
         this.addChild(new game.HUD.BigCat(338, 168));
         this.addChild(new game.HUD.Powerup(298, 168));
 
         this.addChild(new game.HUD.SuccessFailure(144, 108));
+        this.addChild(new game.HUD.ExitControl(32, 32));
 
         this.addChild(new game.HUD.Overlay());
 	}
@@ -306,67 +287,47 @@ game.HUD.Powerup = me.AnimationSheet.extend({
 /** 
  * A single digit of score.
  */
-game.HUD.ScoreDigit = me.AnimationSheet.extend({	
+game.HUD.Score = me.Renderable.extend({	
 	/** 
-	 * X and Y specify the position. Index determines what power of 10 to show
-     * from the score. (Index = 5 -> show the 100000's place of the score)
+	 * X and Y specify the position.
 	 */
-	init: function(x, y, index) {
+	init: function(x, y) {
 		
 		// call the parent constructor 
 		// (size does not matter here)
-		this.parent(x, y, me.loader.getImage("moneyfont"), 8, 8);
-
-        this.addAnimation("0", [0]);
-        this.addAnimation("1", [1]);
-        this.addAnimation("2", [2]);
-        this.addAnimation("3", [3]);
-        this.addAnimation("4", [4]);
-        this.addAnimation("5", [5]);
-        this.addAnimation("6", [6]);
-        this.addAnimation("7", [7]);
-        this.addAnimation("8", [8]);
-        this.addAnimation("9", [9]);
-        this.addAnimation("dollar", [10]);
-        this.addAnimation("empty", [11]);
-        this.setCurrentAnimation("dollar");
+		this.parent(new me.Vector2d(x, y), 10, 10);
 		
 		// local copy of the global game score
 		this.score = -1;
-        this.index = index;
-        if (index == -1) {
-            this.powerOfTen = 0;
-        } else {
-            this.powerOfTen = Math.pow(10, index);
-        }
 
 		// make sure we use screen coordinates
 		this.floating = true;
+
+        this.textObj = new game.FancyText.String(x, y, 8, "yellow");
+        this.textObj.setString("$0000000");
+        me.game.add(this.textObj, 1000001);
 	},
+
+    draw: function(context) {},
 
 	/**
 	 * update function
 	 */
 	update : function () {
-        if (this.index == -1) {
-            // The animation should already be "dollar"
-            return false;
-        }
 		if (this.score !== game.data.score) {	
 			this.score = game.data.score;
-            var baseScore = this.score % (this.powerOfTen * 10);
-            var count = 0;
-            while (baseScore >= this.powerOfTen) {
-                baseScore -= this.powerOfTen;
-                count++;
-            }
-            if (count < 10) {
-                this.setCurrentAnimation(count.toString());
-            }
+            this.textObj.setString(this.scoreToStr(this.score));
 			return true;
 		}
-		return false;
 	},
+
+    /** Return a stringified score. */
+    scoreToStr: function(score) {
+        var str = score.toString();
+        while (str.length < 7) str = "0" + str;
+        str = "$" + str;
+        return str;
+    },
 });
 
 /** 
@@ -409,73 +370,100 @@ game.HUD.Stopwatch = me.AnimationSheet.extend({
 });
 
 /** 
- * A single digit of the up-counting timer.
+ * The up-counting timer.
  */
-game.HUD.StopwatchDigit = me.AnimationSheet.extend({	
+game.HUD.StopwatchTime = me.Renderable.extend({	
 	/** 
 	 * X and Y specify the position. Unit is the unit by which this counter
      * counts. If type is any of "'. then the character will be directly shown.
      * If it is #, then a digit will be shown. MODULO specifies what to divide
      * the 100th-seconds count by before counting up the digit.
 	 */
-	init: function(x, y, type, unit, modulo) {
+	init: function(x, y) {
 		
 		// call the parent constructor 
 		// (size does not matter here)
-		this.parent(x, y, me.loader.getImage("stopwatchfont"), 8, 8);
-
-        this.addAnimation("0", [0]);
-        this.addAnimation("1", [1]);
-        this.addAnimation("2", [2]);
-        this.addAnimation("3", [3]);
-        this.addAnimation("4", [4]);
-        this.addAnimation("5", [5]);
-        this.addAnimation("6", [6]);
-        this.addAnimation("7", [7]);
-        this.addAnimation("8", [8]);
-        this.addAnimation("9", [9]);
-        this.addAnimation("\'", [10]);
-        this.addAnimation("\"", [11]);
-        this.addAnimation(".", [12]);
-        this.addAnimation("empty", [13]);
-        this.setCurrentAnimation("empty");
-		
-		// local copy of the global game timeTaken, except in hundredths of a
-        // second.
-		this.time = -1;
-        this.unit = unit;
-        this.modulo = modulo;
-        if (type == "#") {
-            this.isNumber = true;
-        } else {
-            this.isNumber = false;
-            this.setCurrentAnimation(type);
-        }
+		this.parent(new me.Vector2d(x, y), 10, 10);
 
 		// make sure we use screen coordinates
 		this.floating = true;
+		// local copy of the global game timeTaken, except in hundredths of a
+        // second.
+		this.time = -1;
+
+        this.textObj = new game.FancyText.String(x, y, 9, "blue");
+        this.textObj.setString("--'--.--\"");
+        me.game.add(this.textObj, 1000001);
 	},
+
+    draw : function(context) {},
 
 	/**
 	 * update function
 	 */
 	update : function () {
-		if (this.isNumber && this.time !== game.data.timeTaken) {	
+		if (this.time !== game.data.timeTaken) {	
 			this.time = game.data.timeTaken;
-            var centiseconds = Math.floor(this.time * 100.0 / 60.0);
-            var baseTime = centiseconds % this.modulo;
-            var count = 0;
-            while (baseTime >= this.unit) {
-                baseTime -= this.unit;
-                count++;
-            }
-            if (count < 10) {
-                this.setCurrentAnimation(count.toString());
-            }
+            this.textObj.setString(this.stepsToTimeStr(this.time));
 			return true;
 		}
 		return false;
-	}
+	},
+
+    /** Turns STEPS in 60ths of a second into a proper --'--.--" readout. */
+    stepsToTimeStr: function(steps) {
+        var centiseconds = Math.floor(steps * 100.0 / 60.0);
+        var str = "";
+
+        // 10 minutes at a time
+        var digit = 0;
+        while (centiseconds >= 60000) {
+            centiseconds -= 60000;
+            digit += 1;
+        }
+        str += digit.toString();
+
+        // 1 minute at a time
+        digit = 0;
+        while (centiseconds >= 6000) {
+            centiseconds -= 6000;
+            digit += 1;
+        }
+        str += digit.toString() + "'";
+
+        // 10 seconds at a time
+        digit = 0;
+        while (centiseconds >= 1000) {
+            centiseconds -= 1000;
+            digit += 1;
+        }
+        str += digit.toString();
+
+        // 1 second at a time
+        digit = 0;
+        while (centiseconds >= 100) {
+            centiseconds -= 100;
+            digit += 1;
+        }
+        str += digit.toString() + ".";
+
+        // 10 centis at a time
+        digit = 0;
+        while (centiseconds >= 10) {
+            centiseconds -= 10;
+            digit += 1;
+        }
+        str += digit.toString();
+
+        // 1 centi at a time
+        digit = 0;
+        while (centiseconds >= 1) {
+            centiseconds -= 1;
+            digit += 1;
+        }
+        str += digit.toString() + "\"";
+        return str;
+    },
 });
 
 /** 
@@ -632,13 +620,37 @@ game.HUD.NewHighscore = me.AnimationSheet.extend({
                 this.cursorPos++;
                 this.pos.set(this.startX + 8*this.cursorPos, this.startY);
             } else {
-                // TODO APPLY HIGHSCORE TO THE TABLE SOMEHOW
-                me.state.change(me.state.MENU);
+                game.data.highlightScoreIndex = -1;
+                game.data.highlightTimeIndex = -1;
+                game.data.highScoreInitials = this.getInitialsString();
+                this.applyHighscores();
+                me.state.change(me.state.SCORE);
             }
         }
 
 		return true;
 	},
+
+    applyHighscores: function() {
+        var score = game.data.score;
+        var time = game.data.timeTaken;
+        var initials = game.data.highScoreInitials;
+
+        for (var i = 0; i < 6; i++) {
+            if (score > game.settings.bestScores[i].score) {
+                game.settings.insertBestScore(score, time, initials, i);
+                game.data.highlightScoreIndex = i;
+                break;
+            }
+        }
+        for (var i = 0; i < 6; i++) {
+            if (time < game.settings.bestTimes[i].time) {
+                game.settings.insertBestTime(score, time, initials, i);
+                game.data.highlightTimeIndex = i;
+                break;
+            }
+        }
+    },
 
     getInitialsString: function() {
         var Acode = "A".charCodeAt(0);
@@ -648,5 +660,56 @@ game.HUD.NewHighscore = me.AnimationSheet.extend({
         str += String.fromCharCode(Acode + this.initialCodes[2]);
         return str;
     },
+});
+
+/** 
+ * Allows the user to press escape twice to exit.
+ */
+game.HUD.ExitControl = me.Renderable.extend({	
+	/** Does not actually render ever, but creates FancyText stuff. */
+	init: function(x, y) {
+		this.parent(new me.Vector2d(x, y), 10, 10);
+
+        this.alwaysUpdate = true;
+        this.floating = true;
+        this.myText = "Are you sure you want to exit?";
+        this.myTextObj = null;
+
+        this.exitKey = false;
+        this.countDown = -1;
+	},
+
+	/**
+	 * update function
+	 */
+	update : function () {
+        if (me.input.isKeyPressed("exit") && !this.exitKey) {
+            this.exitKey = true;
+            if (this.myTextObj == null) {
+                this.countDown = 100;
+                this.myTextObj = new game.FancyText.String(this.pos.x,
+                        this.pos.y, this.myText.length, "red");
+                this.myTextObj.setString(this.myText);
+                me.game.add(this.myTextObj, 100);
+            } else {
+                me.state.change(me.state.MENU);
+            }
+        } else if (!me.input.isKeyPressed("exit")) {
+            this.exitKey = false;
+        }
+
+		if (this.myTextObj != null) {
+            this.countDown--;
+            if (this.countDown <= 0) {
+                me.game.remove(this.myTextObj);
+                this.myTextObj = null;
+            }
+        }
+        return true;
+	},
+
+    draw: function(context) {
+        return;
+    }
 });
 

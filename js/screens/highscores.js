@@ -1,4 +1,4 @@
-game.TitleScreen = me.ScreenObject.extend({
+game.HighScoreScreen = me.ScreenObject.extend({
 	/**	
 	 *  action to perform on state change
 	 */
@@ -16,9 +16,8 @@ game.TitleScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
         me.input.bindKey(me.input.KEY.ESC, "exit", false);
 
-        game.data.reset();
-        this.title = new game.TitleGfx.Container();
-        me.game.add(this.title, 0);
+        this.hsctl = new game.HighScoreCtl.Container();
+        me.game.add(this.hsctl, 0);
 	},
 	
 	
