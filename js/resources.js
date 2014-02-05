@@ -54,4 +54,9 @@ game.resources = [
     {name: "digsound", type: "audio", src: "data/sfx/", channel : 2},
     {name: "breakblock", type: "audio", src: "data/sfx/", channel : 2},
     {name: "select", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "meow0", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "meow1", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "meow2", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "win", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "lose", type: "audio", src: "data/sfx/", channel : 2},
 ];

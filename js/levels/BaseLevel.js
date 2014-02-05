@@ -256,17 +256,17 @@ game.ChunkGen = {
     makeDarkTileContents: function(x, y, level) {
         var sample = Math.random();
 
-        if (sample < 0.15) {
+        if (sample < 0.06) {
             return new game.BoneItem(x, y, level);
-        } else if (sample < 0.45) {
+        } else if (sample < 0.36) {
             return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.51) {
+        } else if (sample < 0.43) {
             return new game.TreasureItem(x, y, level, "ruby");
-        } else if (sample < 0.57) {
+        } else if (sample < 0.46) {
             return new game.PowerupItem(x, y, level, "sight");
-        } else if (sample < 0.61) {
+        } else if (sample < 0.49) {
             return new game.PowerupItem(x, y, level, "flame");
-        } else if (sample < 0.66) {
+        } else if (sample < 0.53) {
             return new game.PowerupItem(x, y, level, "speed");
         } else {
             return new game.TreasureItem(x, y, level, "nugget");

@@ -506,9 +506,11 @@ game.HUD.SuccessFailure = me.AnimationSheet.extend({
             if (game.data.gotCat) {
                 this.didWin = true;
                 this.setCurrentAnimation("success");
+                if (game.settings.soundOn) { me.audio.play("win"); }
             } else {
                 this.didWin = false;
                 this.setCurrentAnimation("failure");
+                if (game.settings.soundOn) { me.audio.play("lose"); }
             }
 			return true;
 		} else if (this.gameOver) {
@@ -519,6 +521,9 @@ game.HUD.SuccessFailure = me.AnimationSheet.extend({
                     if (game.data.timer > 0
                             && this.showHighscoreCounter >= 15) {
                         this.showHighscoreCounter = 0;
+                        if (game.settings.soundOn) {
+                            me.audio.play("smalltreasure");
+                        }
                         if (game.data.timer >= game.data.BIGBONETIME) {
                             game.data.timer -= game.data.BIGBONETIME;
                             game.data.score += game.data.BIGBONEPOINTS;
@@ -598,7 +603,8 @@ game.HUD.NewHighscore = me.AnimationSheet.extend({
         if (key == this.lastKeyPressed) {
             this.keyPressCounter++;
             if ((this.keyPressCounter == 1) || (this.keyPressCounter > 30
-                    && this.keyPressCounter % 8 == 4 && key != "action")) {
+                    && this.keyPressCounter % 8 == 4 && key != "action"
+                    && key != "none")) {
                 doAction = true;
             }
         } else {
@@ -608,6 +614,7 @@ game.HUD.NewHighscore = me.AnimationSheet.extend({
 
 		if (!doAction) { return false; }
 
+        if (game.settings.soundOn) { me.audio.play("select"); }
         if (key == "left") {
             this.cursorPos--;
             if (this.cursorPos < 0) { this.cursorPos = 2; }

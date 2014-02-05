@@ -141,7 +141,8 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
         this.addMenuItem("New Game", "blue");
         this.addMenuItem("Highscores", "blue");
         // The extra space after 'On' is to fit the string 'Sound Off'
-        this.addMenuItem("No sound yet      ", "blue");
+        this.addMenuItem("Sound On ", "blue");
+        this.addMenuItem("Music On ", "blue");
         // Likewise, this item has to fit 'Are you sure?'
         this.addMenuItem("Clear Data   ", "red");
 
@@ -168,6 +169,7 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
 
     /** Moves the menu cursor by NUMITEMS items, negative or positive. */
     moveMenuCursor: function(numItems) {
+        if (game.settings.soundOn) { me.audio.play("select"); }
         this.menuIndex += numItems;
         while (this.menuIndex < 0) {
             this.menuIndex += this.menuItems.length;
@@ -190,9 +192,13 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
             game.settings.soundOn = !game.settings.soundOn;
             game.settings.save();
         } else if (this.menuIndex == 3) {
+            // Toggle the music
+            game.settings.musicOn = !game.settings.musicOn;
+            game.settings.save();
+        } else if (this.menuIndex == 4) {
             if (!this.areYouSure) {
                 this.areYouSure = true;
-                this.menuItems[3].setString("Are you sure?");
+                this.menuItems[4].setString("Are you sure?");
             } else {
                 game.settings.reset();
                 game.settings.save();
@@ -208,9 +214,15 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
         this.parent();
 
         if (game.settings.soundOn) {
-            this.menuItems[2].setString("No sound yet (On)");
+            this.menuItems[2].setString("Sound On");
         } else {
-            this.menuItems[2].setString("No sound yet (Off)");
+            this.menuItems[2].setString("Sound Off");
+        }
+
+        if (game.settings.musicOn) {
+            this.menuItems[3].setString("Music On");
+        } else {
+            this.menuItems[3].setString("Music Off");
         }
 
         if (me.input.isKeyPressed("up")) {

@@ -71,6 +71,7 @@ game.PlayerEntity = me.ObjectEntity.extend({
                             - Math.floor(game.data.DIGCOST
                             * this.getDigCostMod()));
                 }
+                if (game.settings.soundOn) { me.audio.play("breakblock"); }
                 this.level.digBlock(Math.floor(this.diggingPos.x),
                         Math.floor(this.diggingPos.y));
                 this.diggingPos = null;
@@ -98,6 +99,10 @@ game.PlayerEntity = me.ObjectEntity.extend({
             }
         } else {
             this.pos.setV(this.motionFunc(this.motionTimer));
+            if (this.diggingPos != null && this.motionTimer % 10 == 0
+                    && game.settings.soundOn) {
+                me.audio.play("digsound");
+            }
         }
 
         this.level.xView = this.pos.x - 136; // TODO: tweak

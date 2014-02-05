@@ -35,6 +35,11 @@ game.Meow = me.ObjectEntity.extend({
         this.bottomBound = 100 - 24;
 
         this.counter = 30 + 20*Math.random();
+
+        if (game.settings.soundOn) {
+            var ind = Math.floor(3*Math.random());
+            me.audio.play("meow" + ind.toString());
+        }
 	},
 
 	update: function() {

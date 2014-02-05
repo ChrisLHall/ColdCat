@@ -18,7 +18,7 @@ game.TreasureItem = game.ItemEntity.extend({
     },
 
     onCollect: function() {
-        me.audio.play("smalltreasure");
+        if (game.settings.soundOn) { me.audio.play("smalltreasure"); }
         game.data.score += game.TreasureItem.types[this.treasureType].value;
     }
 });

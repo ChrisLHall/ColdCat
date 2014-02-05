@@ -42,6 +42,7 @@ var game = {
         DEFAULTINITIALS: "AAA",
 
         soundOn: true,
+        musicOn: true,
         bestScores: [],
         bestTimes: [],
 
@@ -94,17 +95,20 @@ var game = {
             me.save.bestScores = this.bestScores;
             me.save.bestTimes = this.bestTimes;
             me.save.soundOn = this.soundOn;
+            me.save.musicOn = this.musicOn;
         },
 
         load: function() {
             me.save.add({
                 bestScores: this.createDefaultScores(),
                 bestTimes: this.createDefaultScores(),
-                soundOn: true
+                soundOn: true,
+                musicOn: true,
             });
             this.bestScores = me.save.bestScores;
             this.bestTimes = me.save.bestTimes;
             this.soundOn = me.save.soundOn;
+            this.musicOn = me.save.musicOn;
         },
     },
 	

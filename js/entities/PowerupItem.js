@@ -20,6 +20,7 @@ game.PowerupItem = game.ItemEntity.extend({
     onCollect: function() {
         var p = this.level.player;
         if (p != null) {
+            me.audio.play("powerup");
             if (p.powerup != null) {
                 p.powerup.onEnd(p, this.level);
             }

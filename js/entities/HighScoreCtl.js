@@ -53,7 +53,7 @@ game.HighScoreCtl.Bg = me.Renderable.extend({
         while (this.x >= 16) { this.x -= 16; }
         while (this.y >= 16) { this.y -= 16; }
 
-        if (me.input.isKeyPressed("exit")) {
+        if (me.input.isKeyPressed("exit") || me.input.isKeyPressed("action")) {
             me.state.change(me.state.MENU);
         }
         return true;
