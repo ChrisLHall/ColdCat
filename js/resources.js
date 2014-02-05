@@ -57,6 +57,7 @@ game.resources = [
     {name: "meow0", type: "audio", src: "data/sfx/", channel : 2},
     {name: "meow1", type: "audio", src: "data/sfx/", channel : 2},
     {name: "meow2", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "bark", type: "audio", src: "data/sfx/", channel : 2},
     {name: "win", type: "audio", src: "data/sfx/", channel : 2},
     {name: "lose", type: "audio", src: "data/sfx/", channel : 2},
 ];

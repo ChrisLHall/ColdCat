@@ -69,7 +69,7 @@ game.TitleGfx.Dog = me.AnimationSheet.extend({
 
 		this.floating = true;
 
-        this.barkTimer = 60;
+        this.barkTimer = 70;
 	},
 
 	update : function () {
@@ -77,8 +77,9 @@ game.TitleGfx.Dog = me.AnimationSheet.extend({
 
         this.barkTimer--;
         if (this.barkTimer == 0) {
+            if (game.settings.soundOn) { me.audio.play("bark"); }
             this.setCurrentAnimation("bark", "wag");
-            this.barkTimer = 30 + Math.floor(100 * Math.random());
+            this.barkTimer = 180 + Math.floor(100 * Math.random());
         }
         return true;
 	},
@@ -110,6 +111,11 @@ game.TitleGfx.Meow = me.ObjectEntity.extend({
         this.collidable = false;
 
         this.counter = 30 + 20*Math.random();
+
+        if (game.settings.soundOn) {
+            var ind = Math.floor(3*Math.random());
+            me.audio.play("meow" + ind.toString());
+        }
 	},
 
 	update: function() {
