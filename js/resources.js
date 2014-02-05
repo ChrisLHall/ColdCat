@@ -48,4 +48,10 @@ game.resources = [
 	 * @example
 	 * {name: "example_sfx", type: "audio", src: "data/sfx/", channel : 2}
 	 */
+    {name: "smalltreasure", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "bone", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "powerup", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "digsound", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "breakblock", type: "audio", src: "data/sfx/", channel : 2},
+    {name: "select", type: "audio", src: "data/sfx/", channel : 2},
 ];
