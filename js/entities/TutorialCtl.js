@@ -24,7 +24,6 @@ game.TutorialCtl = me.AnimationSheet.extend({
 	},
 
     draw: function(context) {
-        console.log("BLAH DRAWIN");
         this.parent(context);
     },
 
@@ -59,8 +58,6 @@ game.TutorialCtl = me.AnimationSheet.extend({
         }
 
         var xTarg = -384*this.pageIndex;
-        console.log(xTarg.toString() + " : " + this.pos.x.toString());
-        //this.pos.x = xTarg;
         if (this.pos.x < xTarg - 16) {
             this.pos.x += 16;
         } else if (this.pos.x > xTarg + 16) {

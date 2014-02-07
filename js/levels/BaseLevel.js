@@ -144,9 +144,12 @@ game.BaseLevel = me.Renderable.extend({
         var startBlockY = Math.floor(this.yView / 16.0);
         var iterationsX = 19; //Math.min(19, this.blocksX - startBlockX);
         var iterationsY = 14; //Math.min(14, this.blocksY - startBlockY);
+        var bx, by;
         for (var x = 0; x < iterationsX; x++) {
             for (var y = 0; y < iterationsY; y++) {
-                this.get(startBlockX + x, startBlockY + y).draw(context);
+                bx = startBlockX + x;
+                by = startBlockY + y;
+                game.GameTileMgr.draw(this.get(bx, by), 16*bx, 16*by, context);
             }
         }
     },
@@ -205,11 +208,11 @@ game.BaseLevel = me.Renderable.extend({
     },
 
     isSolid: function(x, y) {
-        return this.get(x, y).isSolid();
+        return game.GameTileMgr.isSolid(this.get(x, y));
     },
 
     createPlayerAt: function(x, y) {
-        this.set(x, y, new game.GameTile(x, y, "empty", null, false));
+        this.set(x, y, game.GameTileMgr.makeTile("empty", false, null));
         this.player = new game.PlayerEntity(x, y, this);
         me.game.add(this.player, 10);
 
@@ -219,7 +222,7 @@ game.BaseLevel = me.Renderable.extend({
 
     digBlock: function(x, y) {
         if (game.settings.soundOn) { me.audio.play("breakblock"); }
-        this.get(x, y).dig();
+        game.GameTileMgr.dig(this.get(x, y));
     }
 });
 
@@ -233,8 +236,8 @@ game.ChunkGen = {
         var newContents = chunk.contents;
         for (var y = 0; y < 16; y++) {
             for (var x = 0; x < 16; x++) {
-                newContents[y][x] = new game.GameTile(xStart + x,
-                        yStart + y, "unknown", null, false);
+                newContents[y][x]
+                        = game.GameTileMgr.makeTile("unknown", false, null);
             }
         }
         chunk.contentsFinished = true;
@@ -250,11 +253,11 @@ game.ChunkGen = {
             for (var x = 0; x < 16; x++) {
                 var sample = Math.random();
                 if (sample < 0.6) {
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "empty", null, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("empty", false, null);
                 } else {
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "ice", null, false);
+                    newContents[y][x] 
+                            = game.GameTileMgr.makeTile("ice", false, null);
                 }
             }
         }
@@ -274,16 +277,16 @@ game.ChunkGen = {
                 if (sample < 0.04) {
                     var inside = this.makeDarkTileContents(
                             (xStart + x) * 16, (yStart + y) * 16, level);
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "dark", inside, false);
+                    newContents[y][x] 
+                            = game.GameTileMgr.makeTile("dark", false, inside);
                 } else if (sample < 0.3) {
                     var inside = this.makeEmptyTileContents(
                             (xStart + x) * 16, (yStart + y) * 16, level);
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "empty", inside, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("empty", false, inside);
                 } else {
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "ice", null, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("ice", false, null);
                 }
             }
         }
@@ -305,24 +308,24 @@ game.ChunkGen = {
                 if (x == xCat && y == yCat) {
                     var cat = new game.CatItem((xStart + x) * 16,
                             (yStart + y) * 16, level);
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "cat", cat, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("cat", false, cat);
                     continue;
                 }
                 var sample = Math.random();
                 if (sample < 0.12) {
                     var inside = this.makeDarkTreasureContents(
                             (xStart + x) * 16, (yStart + y) * 16, level);
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "dark", inside, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("dark", false, inside);
                 } else if (sample < 0.20) {
                     var inside = this.makeEmptyTileContents(
                             (xStart + x) * 16, (yStart + y) * 16, level);
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "empty", inside, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("empty", false, inside);
                 } else {
-                    newContents[y][x] = new game.GameTile(xStart + x,
-                            yStart + y, "ice", null, false);
+                    newContents[y][x]
+                            = game.GameTileMgr.makeTile("ice", false, null);
                 }
             }
         }
@@ -578,7 +581,7 @@ game.ChunkGen = {
                     x * 16, y * 16, level);
             type = "empty";
         }
-        contents[yOff][xOff] = new game.GameTile(x, y, type, inside, false);
+        contents[yOff][xOff] = game.GameTileMgr.makeTile(type, false, inside);
     },
 
 
