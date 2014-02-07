@@ -26,6 +26,7 @@ game.resources = [
     {name: "menuarrow", type: "image", src: "data/img/menuarrow.png"},
     {name: "highscorebg", type: "image", src: "data/img/highscorebg.png"},
     {name: "highscoretitle", type: "image", src: "data/img/highscoretitle.png"},
+    {name: "tutorial", type: "image", src: "data/img/tutorial.png"},
 
 
 	/* Atlases 
@@ -43,6 +44,7 @@ game.resources = [
 	 * @example
 	 * {name: "example_bgm", type: "audio", src: "data/bgm/", channel : 1},
 	 */	
+    {name: "frozensecretkittymusic", type: "audio", src: "data/bgm/", channel : 1},
 
 	/* Sound effects. 
 	 * @example

@@ -146,6 +146,7 @@ var game = {
         game.settings.load();
 
 		me.state.set(me.state.MENU, new game.TitleScreen());
+        me.state.set(me.state.READY, new game.TutorialScreen());
 		me.state.set(me.state.PLAY, new game.PlayScreen());
         me.state.set(me.state.SCORE, new game.HighScoreScreen());
 

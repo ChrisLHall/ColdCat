@@ -16,6 +16,9 @@ game.PlayScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
         me.input.bindKey(me.input.KEY.ESC, "exit", false);
 
+        if (game.settings.musicOn) {
+            me.audio.play("frozensecretkittymusic", false, null, 0.75);
+        }
         game.data.reset();
         this.level = new game.BaseLevel(12, 12, 11);
         me.game.add(this.level, 0);

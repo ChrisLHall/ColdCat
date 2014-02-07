@@ -71,7 +71,6 @@ game.PlayerEntity = me.ObjectEntity.extend({
                             - Math.floor(game.data.DIGCOST
                             * this.getDigCostMod()));
                 }
-                if (game.settings.soundOn) { me.audio.play("breakblock"); }
                 this.level.digBlock(Math.floor(this.diggingPos.x),
                         Math.floor(this.diggingPos.y));
                 this.diggingPos = null;

@@ -191,7 +191,7 @@ game.TitleGfx.Menu = me.AnimationSheet.extend({
     /** Do yo thang for selecting a menu item. */
     selectMenuItem: function() {
         if (this.menuIndex == 0) {
-            me.state.change(me.state.PLAY);
+            me.state.change(me.state.READY);
         } else if (this.menuIndex == 1) {
             me.state.change(me.state.SCORE);
         } else if (this.menuIndex == 2) {

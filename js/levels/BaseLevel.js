@@ -38,34 +38,26 @@ game.BaseLevel = me.Renderable.extend({
         this.playerStartY = 16*this.startChunkY
                 + 1 + Math.floor(14 * Math.random());
 
+        // Determine what type each chunk is.
         this.chunks = [];
         for (var chunkY = 0; chunkY < this.chunksY; chunkY++) {
             this.chunks[chunkY] = [];
             for (var chunkX = 0; chunkX < this.chunksX; chunkX++) {
                 var t = "normal";
+                var treasureCaveList = [];
                 if (chunkX == this.startChunkX && chunkY == this.startChunkY) {
                     t = "player";
                 } else if (chunkX == this.catChunkX
                         && chunkY == this.catChunkY) {
                     t = "cat";
                 } else {
-                    var treasureCaveList = [];
-                    if (Math.random() < 0.2) {
-                        var tX = 1 + Math.floor(14 * Math.random());
-                        var tY = 1 + Math.floor(14 * Math.random());
-                        treasureCaveList[0] = new me.Vector2d(tX, tY);
-                        if (Math.random() < 0.2) {
-                            t = "treasure";
-                            tX = 1 + Math.floor(14 * Math.random());
-                            tY = 1 + Math.floor(14 * Math.random());
-                            treasureCaveList[1] = new me.Vector2d(tX, tY);
-                            if (Math.random() < 0.3) {
-                                tX = 1 + Math.floor(14 * Math.random());
-                                tY = 1 + Math.floor(14 * Math.random());
-                                treasureCaveList[2] = new me.Vector2d(tX, tY);
-                            }
-                        }
+                    var ensureCave = false;
+                    if (Math.random() < 0.1) {
+                        t = "treasure";
+                        ensureCave = true;
                     }
+                    treasureCaveList
+                            = game.ChunkGen.genTreasurePositions(ensureCave);
                 }
 
                 var exitL = 2 + Math.floor(12 * Math.random());
@@ -121,8 +113,8 @@ game.BaseLevel = me.Renderable.extend({
             } else if (this.meowTimer == 0) {
                 this.meowTimer = Math.floor(80 + 80*Math.random());
                 me.game.add(new game.Meow(
-                        16*(this.catBlockX - 8 + 16*Math.random()),
-                        16*(this.catBlockY - 8 + 16*Math.random()),
+                        16*(this.catBlockX - 5 + 10*Math.random()),
+                        16*(this.catBlockY - 5 + 10*Math.random()),
                         this), 1000);
             }
             if (this.player != null) {
@@ -226,77 +218,15 @@ game.BaseLevel = me.Renderable.extend({
     },
 
     digBlock: function(x, y) {
+        if (game.settings.soundOn) { me.audio.play("breakblock"); }
         this.get(x, y).dig();
     }
 });
 
+/** Chunk generation utilities and logic. */
 game.ChunkGen = {
-    makeEmptyTileContents: function(x, y, level) {
-        var sample = Math.random();
-        if (sample < 0.025) {
-            return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.065) {
-            return new game.TreasureItem(x, y, level, "nugget");
-        } else if (sample < 0.08) {
-            return new game.BoneItem(x, y, level);
-        }
-        return null;
-    },
-
-    makeEmptyCaveContents: function(x, y, level) {
-        var sample = Math.random();
-        if (sample < 0.006) {
-            return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.02) {
-            return new game.TreasureItem(x, y, level, "nugget");
-        }
-        return null;
-    },
-
-    makeDarkTileContents: function(x, y, level) {
-        var sample = Math.random();
-
-        if (sample < 0.06) {
-            return new game.BoneItem(x, y, level);
-        } else if (sample < 0.36) {
-            return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.43) {
-            return new game.TreasureItem(x, y, level, "ruby");
-        } else if (sample < 0.46) {
-            return new game.PowerupItem(x, y, level, "sight");
-        } else if (sample < 0.49) {
-            return new game.PowerupItem(x, y, level, "flame");
-        } else if (sample < 0.53) {
-            return new game.PowerupItem(x, y, level, "speed");
-        } else {
-            return new game.TreasureItem(x, y, level, "nugget");
-        }
-    },
-
-    makeDarkTreasureContents: function(x, y, level) {
-        var sample = Math.random();
-        if (sample < 0.2) {
-            return new game.TreasureItem(x, y, level, "bar");
-        } else if (sample < 0.25) {
-            return new game.TreasureItem(x, y, level, "ruby");
-        } else {
-            return new game.TreasureItem(x, y, level, "nugget");
-        }
-    },
-
-    makeCaveTreasure: function(x, y, level) {
-        var sample = Math.random();
-        if (sample < 0.25) {
-            return new game.PowerupItem(x, y, level, "sight");
-        } else if (sample < 0.4) {
-            return new game.PowerupItem(x, y, level, "flame");
-        } else if (sample < 0.6) {
-            return new game.PowerupItem(x, y, level, "speed");
-        } else {
-            return new game.TreasureItem(x, y, level, "ruby");
-        }
-    },
-
+    /** Generate chunk data for an "unknown" type chunk CHUNK, at chunk coords
+     *  X, Y in LEVEL. Populates the chunk. */
     genUnknownChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
@@ -310,6 +240,8 @@ game.ChunkGen = {
         chunk.contentsFinished = true;
     },
 
+    /** Generate chunk data for player starting chunk CHUNK, at chunk coords
+     *  X, Y in LEVEL. Populates the chunk. */
     genPlayerChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
@@ -329,6 +261,8 @@ game.ChunkGen = {
         chunk.contentsFinished = true;
     },
 
+    /** Generate chunk data for an "normal" type chunk CHUNK, at chunk coords
+     *  X, Y in LEVEL. Populates the chunk. */
     genNormalChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
@@ -356,6 +290,8 @@ game.ChunkGen = {
         chunk.contentsFinished = true;
     },
 
+    /** Generate chunk data for the cat-containing chunk CHUNK, at chunk coords
+     *  X, Y in LEVEL. Populates the chunk. */
     genCatChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
@@ -393,6 +329,8 @@ game.ChunkGen = {
         chunk.contentsFinished = true;
     },
 
+    /** Generate chunk data for a "cave" type chunk CHUNK, at chunk coords
+     *  X, Y in LEVEL. Creates a boolean block array but DOES NOT POPULATE. */
     genCaveChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
@@ -432,6 +370,8 @@ game.ChunkGen = {
         }
     },
 
+    /** Generate chunk data for a "treasure" type chunk CHUNK, at chunk coords
+     *  X, Y in LEVEL. Creates a boolean block array but DOES NOT POPULATE. */
     genTreasureChunk: function(chunk, level, chunkX, chunkY) {
         var xStart = 16 * chunkX;
         var yStart = 16 * chunkY;
@@ -445,71 +385,160 @@ game.ChunkGen = {
         }
     },
 
-    /** Digs a random tunnel through BLOCKARRAY starting at (XSTART, YSTART) and
-     *  ending at (XEND, YEND). */
-    digTunnel: function(blockArray, xStart, yStart, xEnd, yEnd) {
-        var dX = (xEnd - xStart) / 16;
-        var dY = (yEnd - yStart) / 16;
-
-        for (var i = 0; i < 16; i++) {
-            var x = Math.floor(xStart + i * dX);
-            var y = Math.floor(yStart + i * dY);
-            if (blockArray[y][x] == 1) {
-                var tunnelShape = this.tunnelShapes[
-                        Math.floor(this.tunnelShapes.length * Math.random())];
-                var xOffset = -Math.floor(tunnelShape[0].length / 2);
-                var yOffset = -Math.floor(tunnelShape.length / 2);
-                this.applyBlockShape(blockArray, tunnelShape, x + xOffset,
-                        y + yOffset);
-            }
-        }
-    },
-
-    genIsBlockArray: function() {
-        var isBlock = [];
-        for (var y = 0; y < 16; y++) {
-            isBlock[y] = [];
-            for (var x = 0; x < 16; x++) {
-                isBlock[y][x] = 1;
-            }
-        }
-        return isBlock;
-    },
-
-    /** Given a 16*16 array of 0s and 1s BOOLARRAY and an NxN array of 0s and 1s
-     *  SHAPEARRAY, remove the blocks in BOOLARRAY by applying SHAPEARRAY at the
-     *  specified position XSTART, YSTART. */
-    applyBlockShape: function(boolArray, shapeArray, xStart, yStart) {
-        var height = shapeArray.length;
-        var width = shapeArray[0].length;
-        for (var y = 0; y < height; y++) {
-            var yCoor = yStart + y;
-            if (yCoor < 0 || yCoor >= 16) { continue; }
-            for (var x = 0; x < width; x++) {
-                var xCoor = xStart + x;
-                if (xCoor < 0 || xCoor >= 16) { continue; }
-                if (shapeArray[y][x] == 0) {
-                    boolArray[yCoor][xCoor] = 0;
+    /** Generate a list of position vectors to place treasure caves.
+     *  If GUARANTEE is true, then at least one cave will be generated. */
+    genTreasurePositions: function(guarantee) {
+        var treasureCaveList = [];
+        if (Math.random() < 0.2 || guarantee) {
+            var tX = 1 + Math.floor(14 * Math.random());
+            var tY = 1 + Math.floor(14 * Math.random());
+            treasureCaveList[0] = new me.Vector2d(tX, tY);
+            if (Math.random() < 0.2) {
+                t = "treasure";
+                tX = 1 + Math.floor(14 * Math.random());
+                tY = 1 + Math.floor(14 * Math.random());
+                treasureCaveList[1] = new me.Vector2d(tX, tY);
+                if (Math.random() < 0.3) {
+                    tX = 1 + Math.floor(14 * Math.random());
+                    tY = 1 + Math.floor(14 * Math.random());
+                    treasureCaveList[2] = new me.Vector2d(tX, tY);
                 }
             }
         }
+        return treasureCaveList;
     },
 
-    /** Create an empty contents array. */
-    genEmptyContents: function() {
-        var contents = [];
-        for (var y = 0; y < 16; y++) {
-            contents[y] = [];
-            for (var x = 0; x < 16; x++) {
-                contents[y][x] = null;
+
+    /** Generate an item for an empty tile at X, Y in LEVEL. */
+    makeEmptyTileContents: function(x, y, level) {
+        var sample = Math.random();
+        if (sample < 0.025) {
+            return new game.TreasureItem(x, y, level, "bar");
+        } else if (sample < 0.065) {
+            return new game.TreasureItem(x, y, level, "nugget");
+        } else if (sample < 0.08) {
+            return new game.BoneItem(x, y, level);
+        }
+        return null;
+    },
+
+    /** Generate an item for a floor tile of a cave at X, Y in LEVEL. */
+    makeEmptyCaveContents: function(x, y, level) {
+        var sample = Math.random();
+        if (sample < 0.006) {
+            return new game.TreasureItem(x, y, level, "bar");
+        } else if (sample < 0.02) {
+            return new game.TreasureItem(x, y, level, "nugget");
+        }
+        return null;
+    },
+
+    /** Generate an item to be inside of a dark tile at X, Y in LEVEL. */
+    makeDarkTileContents: function(x, y, level) {
+        var sample = Math.random();
+
+        if (sample < 0.06) {
+            return new game.BoneItem(x, y, level);
+        } else if (sample < 0.36) {
+            return new game.TreasureItem(x, y, level, "bar");
+        } else if (sample < 0.43) {
+            return new game.TreasureItem(x, y, level, "ruby");
+        } else if (sample < 0.46) {
+            return new game.PowerupItem(x, y, level, "sight");
+        } else if (sample < 0.49) {
+            return new game.PowerupItem(x, y, level, "flame");
+        } else if (sample < 0.53) {
+            return new game.PowerupItem(x, y, level, "speed");
+        } else {
+            return new game.TreasureItem(x, y, level, "nugget");
+        }
+    },
+
+    /** Generate a treasure to be in the dark tile at X, Y in LEVEL.
+     *  (No powerups!) */
+    makeDarkTreasureContents: function(x, y, level) {
+        var sample = Math.random();
+        if (sample < 0.2) {
+            return new game.TreasureItem(x, y, level, "bar");
+        } else if (sample < 0.25) {
+            return new game.TreasureItem(x, y, level, "ruby");
+        } else {
+            return new game.TreasureItem(x, y, level, "nugget");
+        }
+    },
+
+    /** Generate the treasure to be placed in the center of a treasure cave at
+     *  X, Y in LEVEL. */
+    makeCaveTreasure: function(x, y, level) {
+        var sample = Math.random();
+        if (sample < 0.25) {
+            return new game.PowerupItem(x, y, level, "sight");
+        } else if (sample < 0.4) {
+            return new game.PowerupItem(x, y, level, "flame");
+        } else if (sample < 0.6) {
+            return new game.PowerupItem(x, y, level, "speed");
+        } else {
+            return new game.TreasureItem(x, y, level, "ruby");
+        }
+    },
+
+
+    /** Choose the nearest non-populated block to the dog and create it. X
+     *  distances less than 8 and Y distances less than 6 count as 0. Used to
+     *  reduce lag. */
+    makeNearestBlock: function(playerX, playerY, level) {
+        var x, y, cX, cY, chunk, cXOff, cYOff, dX, dY;
+        var closestDist = 1000;
+        var xClosest = -1;
+        var yClosest = -1;
+
+        for (var xOff = -15; xOff < 15; xOff++) {
+            for (var yOff = -12; yOff < 12; yOff++) {
+                if (Math.abs(xOff) <= 8 && Math.abs(yOff) <= 6) continue;
+                x = playerX + xOff;
+                y = playerY + yOff;
+                cX = Math.floor(x / 16.0);
+                cY = Math.floor(y / 16.0);
+
+                if (!level.inBounds(x, y)
+                        || level.getChunk(cX, cY) == null
+                        || level.getChunk(cX, cY).isBlockArray == null) {
+                    continue;
+                }
+
+                chunk = level.getChunk(cX, cY);
+                cXOff = x % 16;
+                cYOff = y % 16;
+
+                dX = Math.max(0, Math.abs(xOff) - 8);
+                dY = Math.max(0, Math.abs(yOff) - 6);
+
+                if (chunk.contents[cYOff][cXOff] == null
+                        && dX + dY < closestDist) {
+                    closestDist = dX + dY;
+                    xClosest = x;
+                    yClosest = y;
+
+                    if (dX + dY <= 1) {
+                        this.makeContents(chunk, xClosest, yClosest, level);
+                        return;
+                    }
+                }
             }
         }
-        return contents;
+
+        if (closestDist != 1000) {
+            cX = Math.floor(xClosest / 16.0);
+            cY = Math.floor(yClosest / 16.0);
+            chunk = level.getChunk(cX, cY);
+
+            this.makeContents(chunk, xClosest, yClosest, level);
+        }
     },
 
     /** Finally, generate a game tile from an array of 0s and 1s
-     *  blockarray from CHUNK. Start the game tiles at block coordinates X, Y
-     *  given the LEVEL. Place treasures at locations in the chunk. */
+     *  "isBlockArray" from CHUNK. Place the tile at block coordinates X, Y
+     *  given the LEVEL. Place treasure here, if there is any. */
     makeContents: function(chunk, x, y, level) {
         var blockArray = chunk.isBlockArray;
         var treasures = chunk.treasureCaves;
@@ -552,53 +581,72 @@ game.ChunkGen = {
         contents[yOff][xOff] = new game.GameTile(x, y, type, inside, false);
     },
 
-    /** Choose the nearest block to the dog and create it. X distances less than
-     *  8 and Y distances less than 6 count as 0. */
-    makeNearestBlock: function(playerX, playerY, level) {
-        var x, y, cX, cY, chunk, cXOff, cYOff, dX, dY;
-        var closestDist = 1000;
-        var xClosest = -1;
-        var yClosest = -1;
 
-        for (var xOff = -15; xOff < 15; xOff++) {
-            for (var yOff = -12; yOff < 12; yOff++) {
-                if (Math.abs(xOff) <= 8 && Math.abs(yOff) <= 6) continue;
-                x = playerX + xOff;
-                y = playerY + yOff;
-                cX = Math.floor(x / 16.0);
-                cY = Math.floor(y / 16.0);
+    /** Generate a 16x16 array of "1"s, indicating that every tile should be
+     *  occupied by ice. */
+    genIsBlockArray: function() {
+        var isBlock = [];
+        for (var y = 0; y < 16; y++) {
+            isBlock[y] = [];
+            for (var x = 0; x < 16; x++) {
+                isBlock[y][x] = 1;
+            }
+        }
+        return isBlock;
+    },
 
-                if (!level.inBounds(x, y)
-                        || level.getChunk(cX, cY) == null
-                        || level.getChunk(cX, cY).isBlockArray == null) {
-                    continue;
-                }
-
-                chunk = level.getChunk(cX, cY);
-                cXOff = x % 16;
-                cYOff = y % 16;
-
-                dX = Math.max(0, Math.abs(xOff) - 8);
-                dY = Math.max(0, Math.abs(yOff) - 6);
-
-                if (chunk.contents[cYOff][cXOff] == null
-                        && dX + dY < closestDist) {
-                    closestDist = dX + dY;
-                    xClosest = x;
-                    yClosest = y;
+    /** Given a 16*16 array of 0s and 1s BOOLARRAY and an NxN array of 0s and 1s
+     *  SHAPEARRAY, remove the blocks in BOOLARRAY by applying SHAPEARRAY at the
+     *  specified position XSTART, YSTART. Used to "carve" caves. */
+    applyBlockShape: function(boolArray, shapeArray, xStart, yStart) {
+        var height = shapeArray.length;
+        var width = shapeArray[0].length;
+        for (var y = 0; y < height; y++) {
+            var yCoor = yStart + y;
+            if (yCoor < 0 || yCoor >= 16) { continue; }
+            for (var x = 0; x < width; x++) {
+                var xCoor = xStart + x;
+                if (xCoor < 0 || xCoor >= 16) { continue; }
+                if (shapeArray[y][x] == 0) {
+                    boolArray[yCoor][xCoor] = 0;
                 }
             }
         }
+    },
 
-        if (closestDist != 1000) {
-            cX = Math.floor(xClosest / 16.0);
-            cY = Math.floor(yClosest / 16.0);
-            chunk = level.getChunk(cX, cY);
+    /** Digs a random tunnel through BLOCKARRAY starting at (XSTART, YSTART) and
+     *  ending at (XEND, YEND). */
+    digTunnel: function(blockArray, xStart, yStart, xEnd, yEnd) {
+        var dX = (xEnd - xStart) / 16;
+        var dY = (yEnd - yStart) / 16;
 
-            this.makeContents(chunk, xClosest, yClosest, level);
+        for (var i = 0; i < 16; i++) {
+            var x = Math.floor(xStart + i * dX);
+            var y = Math.floor(yStart + i * dY);
+            if (blockArray[y][x] == 1) {
+                var tunnelShape = this.tunnelShapes[
+                        Math.floor(this.tunnelShapes.length * Math.random())];
+                var xOffset = -Math.floor(tunnelShape[0].length / 2);
+                var yOffset = -Math.floor(tunnelShape.length / 2);
+                this.applyBlockShape(blockArray, tunnelShape, x + xOffset,
+                        y + yOffset);
+            }
         }
     },
 
+    /** Create an empty contents array, which will contain the actual tiles. */
+    genEmptyContents: function() {
+        var contents = [];
+        for (var y = 0; y < 16; y++) {
+            contents[y] = [];
+            for (var x = 0; x < 16; x++) {
+                contents[y][x] = null;
+            }
+        }
+        return contents;
+    },
+
+    /** Different shapes that the central cave of a chunk can be. */
     caveShapes: [
         [
             [1, 0, 0, 0, 0, 1],
@@ -634,6 +682,7 @@ game.ChunkGen = {
         ],
     ],
 
+    /** Different shapes to use in carving tunnels. */
     tunnelShapes: [
         [
             [0]
@@ -651,6 +700,7 @@ game.ChunkGen = {
         ]
     ],
 
+    /** Different forms a treasure cave can take. */
     treasureCaveShapes: [
         [
             [1, 0, 1],

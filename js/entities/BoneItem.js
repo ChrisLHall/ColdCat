@@ -11,7 +11,7 @@ game.BoneItem = game.ItemEntity.extend({
     },
 
     onCollect: function() {
-        me.audio.play("bone");
+        if (game.settings.soundOn) { me.audio.play("bone"); }
         game.data.timer = Math.min(game.data.timermax,
                 game.data.timer + game.data.BIGBONETIME);
     }

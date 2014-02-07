@@ -16,6 +16,7 @@ game.HighScoreScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SPACE, "action", false);
         me.input.bindKey(me.input.KEY.ESC, "exit", false);
 
+        me.audio.stop("frozensecretkittymusic");
         this.hsctl = new game.HighScoreCtl.Container();
         me.game.add(this.hsctl, 0);
 	},

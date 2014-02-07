@@ -503,6 +503,7 @@ game.HUD.SuccessFailure = me.AnimationSheet.extend({
 	update : function () {
 		if (!this.gameOver && (game.data.gotCat || game.data.playerLost)) {	
 			this.gameOver = true;
+            me.audio.stop("frozensecretkittymusic");
             if (game.data.gotCat) {
                 this.didWin = true;
                 this.setCurrentAnimation("success");

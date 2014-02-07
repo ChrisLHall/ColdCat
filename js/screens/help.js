@@ -1,4 +1,4 @@
-game.TitleScreen = me.ScreenObject.extend({
+game.TutorialScreen = me.ScreenObject.extend({
 	/**	
 	 *  action to perform on state change
 	 */
@@ -17,9 +17,8 @@ game.TitleScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.ESC, "exit", false);
 
         me.audio.stop("frozensecretkittymusic");
-        game.data.reset();
-        this.title = new game.TitleGfx.Container();
-        me.game.add(this.title, 0);
+        this.ctl = new game.TutorialCtl(2);
+        me.game.add(this.ctl, 0);
 	},
 	
 	
